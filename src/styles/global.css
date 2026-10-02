@@ -162,3 +162,4 @@ a.quiet-link:hover,a.quiet-link:focus-visible{color:var(--text)}
   main p,main ul,main ol{max-width:100%}
 }
 @media (max-width:360px){nav a{font-size:.88rem}nav{gap:6px}}
+@media (max-width:860px){.story-mirror > *{order:0}.story-mirror > :last-child{order:-1}}
