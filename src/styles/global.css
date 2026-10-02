@@ -128,3 +128,8 @@ a.inline-arrow:hover .arrow,a.inline-arrow:focus-visible .arrow{transform:transl
 @media (max-width:860px){.story-journey,.story-mirror{grid-template-columns:1fr}.story-journey > div:first-child,.story-mirror > div:last-child{justify-self:stretch;max-width:none}}
 a.quiet-link{color:var(--muted);text-decoration:none;font-weight:500;transition:color .2s}
 a.quiet-link:hover,a.quiet-link:focus-visible{color:var(--text)}
+/* Tighter flow between About me sections */
+.story-row{padding:16px 0}
+.story-intro{margin-bottom:24px}
+.story-journey canvas.dotmodel,.story-mirror canvas.dotmodel{max-width:380px}
+@media (max-width:860px){.story-row{padding:12px 0}}
