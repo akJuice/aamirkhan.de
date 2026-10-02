@@ -51,3 +51,10 @@ ul.social a:hover{color:var(--accent)}
 .story-row{grid-template-columns:1fr;gap:8px;padding:36px 0}
 .story-split{grid-template-columns:1fr}
 }
+.ff-chip{display:inline-flex;align-items:center;vertical-align:middle;padding:6px 12px;margin:0 2px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--text) 3%,var(--bg));text-decoration:none;transition:border-color .15s,transform .15s;position:relative;top:-2px}
+.ff-chip:hover{border-color:#6160FF;transform:translateY(-1px)}
+.ff-chip img{height:15px;width:auto;display:block}
+.ff-dark{display:none!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ff-light{display:none!important}:root:not([data-theme="light"]) .ff-dark{display:block!important}}
+:root[data-theme="dark"] .ff-light{display:none!important}
+:root[data-theme="dark"] .ff-dark{display:block!important}
