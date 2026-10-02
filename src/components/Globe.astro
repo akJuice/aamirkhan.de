@@ -1,12 +1,17 @@
 ---
 const places = [
-  { name: 'Bangalore, India', note: 'Born', loc: [12.97, 77.59] },
-  { name: 'Turkey', note: '2005–2016 · Childhood', loc: [39.0, 35.0] },
-  { name: 'Cologne, Germany', note: 'Since 2016', loc: [50.94, 6.96] },
+  { name: 'Bangalore', note: 'Born', loc: [12.97, 77.59] },
+  { name: 'Bursa', note: '10 years · Childhood', loc: [40.19, 29.06] },
+  { name: 'Istanbul', note: '1 year · High school', loc: [41.01, 28.98] },
+  { name: 'Cologne', note: 'Arrived in Germany, 2016', loc: [50.94, 6.96] },
+  { name: 'Aachen', note: 'University', loc: [50.78, 6.08] },
+  { name: 'Leonberg', note: 'Home today', loc: [48.80, 9.01] },
 ];
+// Journey in order (indexes into places)
+const route = [0, 1, 2, 3, 5, 4, 5];
 ---
 <figure class="globe-wrap">
-  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: Bangalore, Turkey and Cologne" data-places={JSON.stringify(places)}></canvas>
+  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: Bangalore, Bursa, Istanbul, Cologne, Aachen and Leonberg" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
   <figcaption>
     <ol class="places">
       {places.map((p) => <li><span class="dot"></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
@@ -18,6 +23,7 @@ const places = [
   import createGlobe from 'cobe';
   const canvas = document.getElementById('globe') as HTMLCanvasElement;
   const places = JSON.parse(canvas.dataset.places!) as { loc: [number, number] }[];
+  const route = JSON.parse(canvas.dataset.route!) as number[];
   const isDark = () => {
     const t = document.documentElement.dataset.theme;
     return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
@@ -37,8 +43,8 @@ const places = [
     devicePixelRatio: dpr, width: size * dpr, height: size * dpr,
     phi, theta, diffuse: 1.2, mapSamples: 16000, mapBaseBrightness: 0,
     ...colors(), markerColor: accent(), arcColor: accent(),
-    markers: places.map((p) => ({ location: p.loc, size: 0.06 })),
-    arcs: places.slice(1).map((p, i) => ({ from: places[i].loc, to: p.loc })),
+    markers: places.map((p) => ({ location: p.loc, size: 0.045 })),
+    arcs: route.slice(1).map((to, i) => ({ from: places[route[i]].loc, to: places[to].loc })),
     arcWidth: 0.6, arcHeight: 0.25, markerElevation: 0.02,
   });
 
