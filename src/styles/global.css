@@ -115,7 +115,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 .arrow-link{color:var(--text);display:inline;transition:color .2s}
 .arrow-link:hover,.arrow-link:focus-visible{color:var(--accent)}
 .arrow-link.quiet{color:var(--muted)}
-.arrow-link.quiet:hover{color:var(--text)}
+.arrow-link.quiet:hover,.arrow-link.quiet:focus-visible{color:var(--accent)}
 .dot-arrow{display:inline-block;vertical-align:-0.08em;margin-left:.35em;transition:transform .25s var(--ease)}
 .dot-arrow.left{margin:0 .35em 0 0}
 .arrow-link:hover .dot-arrow:not(.left),.arrow-link:focus-visible .dot-arrow:not(.left){transform:translateX(5px)}

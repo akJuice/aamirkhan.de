@@ -79,16 +79,18 @@ const { model, label, data } = Astro.props;
 
     // dotted arcs + a path for the travelling light
     const path: THREE.Vector3[] = [];
-    for (let k = 1; k < places.length; k++) {
-      const a = ll(places[k - 1].loc[0], places[k - 1].loc[1], R), b = ll(places[k].loc[0], places[k].loc[1], R);
-      for (let t = 0; t <= 1.0001; t += 0.01) {
+    // closed loop: India -> Turkey -> Germany -> back to India, no stops
+    for (let k = 0; k < places.length; k++) {
+      const from = places[k], to = places[(k + 1) % places.length];
+      const a = ll(from.loc[0], from.loc[1], R), b = ll(to.loc[0], to.loc[1], R);
+      const steps = Math.max(40, Math.round(a.angleTo(b) * 80));
+      for (let i = 0; i < steps; i++) {
+        const t = i / steps;
         const v = a.clone().lerp(b, t).normalize().multiplyScalar(R * (1 + 0.18 * Math.sin(Math.PI * t)));
-        if (Math.round(t * 100) % 2 === 0) arcs.push(v.x, v.y, v.z);
+        if (i % 2 === 0) arcs.push(v.x, v.y, v.z);
         path.push(v);
       }
-      for (let i = 0; i < 60; i++) path.push(path[path.length - 1]); // pause at each stop
     }
-    for (let i = 0; i < 80; i++) path.push(path[path.length - 1]); // longer pause at the end
     g.add(points(arcs, 0.024, 'faintAccent'));
 
     // travelling light: a short comet that runs India -> Turkey -> Germany and repeats
