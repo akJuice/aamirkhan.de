@@ -108,3 +108,4 @@ a.tck:hover,a.tck:focus-visible{background:color-mix(in srgb,var(--accent) 8%,tr
 /* Footer always at the bottom */
 .wrap{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 .wrap > main{flex:1}
+.about-photo{object-position:50% 48%}
