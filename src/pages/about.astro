@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import { Image } from 'astro:assets';
-import photo from '../assets/aamir-about.jpg';
 import FeatherFlow from '../components/FeatherFlow.astro';
 import Globe from '../components/Globe.astro';
 import DotModel from '../components/DotModel.astro';
@@ -11,7 +10,7 @@ import DotModel from '../components/DotModel.astro';
 <div>
 <h1>About me</h1>
 </div>
-<Image src={photo} alt="Aamir Khan sitting in a boat on a lake with mountains behind him" widths={[420,840]} sizes="(max-width: 860px) 100vw, 420px" class="about-photo" />
+<DotModel model="bust" label="3D dotted portrait of Aamir" />
 </section>
 
 <section class="story-row story-mirror">
