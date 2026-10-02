@@ -9,10 +9,10 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 <Base title={post.data.title} description={post.data.description}>
-<article>
+<article class="post">
 <h1>{post.data.title}</h1>
-<p class="muted"><time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</time></p>
+<p class="byline"><span>Aamir Khan</span><span class="muted">Updated <time datetime={(post.data.updated ?? post.data.date).toISOString()}>{(post.data.updated ?? post.data.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</time></span></p>
 <Content />
 </article>
-<p><a href="/blog">← All posts</a></p>
+<p class="post-back"><a href="/blog">← All posts</a></p>
 </Base>

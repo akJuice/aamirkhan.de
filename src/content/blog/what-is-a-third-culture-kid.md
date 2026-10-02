@@ -5,7 +5,7 @@ date: 2026-10-02
 category: personal
 ---
 
-"Where are you from?"
+## "Where are you from?"
 
 For most people, that's an easy question with a one-word answer. For me, it's a small decision every time. Do I say India, where I was born? Turkey, where I grew up? Or Germany, where I've been living for almost ten years now?
 
