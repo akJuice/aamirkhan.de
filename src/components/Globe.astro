@@ -13,21 +13,21 @@ const places = [
 
 // Land dots: evenly spaced points on a sphere, kept only where there is land (computed at build time)
 const land = feature(world as any, (world as any).objects.land) as any;
-const N = 9000, pts: number[] = [], hi: number[] = [];
+const N = 9000;
 const all = feature(countries as any, (countries as any).objects.countries) as any;
 const lived = all.features.filter((f: any) => ['356', '792', '276'].includes(String(f.id)));
 const golden = Math.PI * (3 - Math.sqrt(5));
+// one character per sphere point: 0 = water, 1 = land, 2 = a country I lived in
+let mask = '';
 for (let i = 0; i < N; i++) {
   const y = 1 - (i / (N - 1)) * 2, a = golden * i;
   const lat = (Math.asin(y) * 180) / Math.PI;
   const lng = ((((a * 180) / Math.PI) % 360) + 540) % 360 - 180;
-  if (!geoContains(land, [lng, lat])) continue;
-  const target = lived.some((f: any) => geoContains(f, [lng, lat])) ? hi : pts;
-  target.push(Math.round(lat * 10) / 10, Math.round(lng * 10) / 10);
+  mask += !geoContains(land, [lng, lat]) ? '0' : lived.some((f: any) => geoContains(f, [lng, lat])) ? '2' : '1';
 }
 ---
 <figure class="globe-wrap">
-  <DotModel model="globe" label="3D globe marking where Aamir has lived: India, Turkey and Germany" data={{ land: pts, hi, places }} />
+  <DotModel model="globe" label="3D globe marking where Aamir has lived: India, Turkey and Germany" data={{ n: N, mask, places }} />
   </figure>
 
 <style>

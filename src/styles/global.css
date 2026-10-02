@@ -126,3 +126,5 @@ a.inline-arrow:hover .arrow,a.inline-arrow:focus-visible .arrow{transform:transl
 .story-mirror > div:last-child{justify-self:start;max-width:52ch;width:100%}
 .story-journey > :last-child,.story-mirror > :first-child{justify-self:center;width:100%;max-width:440px}
 @media (max-width:860px){.story-journey,.story-mirror{grid-template-columns:1fr}.story-journey > div:first-child,.story-mirror > div:last-child{justify-self:stretch;max-width:none}}
+a.quiet-link{color:var(--muted);text-decoration:none;font-weight:500;transition:color .2s}
+a.quiet-link:hover,a.quiet-link:focus-visible{color:var(--text)}

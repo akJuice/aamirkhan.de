@@ -16,7 +16,7 @@ const { model, label, data } = Astro.props;
   import * as THREE from 'three';
 
   type Arr = number[];
-  type Built = { parts: { obj: THREE.Object3D; spin: number }[]; tilt: number; y: number; startY: number; noFog?: boolean };
+  type Built = { parts: { obj: THREE.Object3D; spin: number }[]; tilt: number; y: number; startY: number; noFog?: boolean; update?: (t: number) => void };
 
   const isDark = () => {
     const t = document.documentElement.dataset.theme;
@@ -26,8 +26,8 @@ const { model, label, data } = Astro.props;
   const S = 0.055; // shared dot spacing
 
   // ---------- point helpers ----------
-  const mats: { m: THREE.PointsMaterial; kind: 'body' | 'accent' | 'faint' | 'color'; color?: string }[] = [];
-  function points(arr: Arr, size: number, kind: 'body' | 'accent' | 'faint' | 'color', color?: string) {
+  const mats: { m: THREE.PointsMaterial; kind: string; color?: string }[] = [];
+  function points(arr: Arr, size: number, kind: string, color?: string) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
     const m = new THREE.PointsMaterial({ size, sizeAttenuation: true, transparent: true, depthWrite: false });
@@ -56,25 +56,55 @@ const { model, label, data } = Astro.props;
 
   // ---------- models ----------
   function buildGlobe(extra: any): Built {
-    const R = 1.2, land: Arr = [], ocean: Arr = [], arcs: Arr = [];
-    for (let i = 0; i < extra.land.length; i += 2) { const v = ll(extra.land[i], extra.land[i + 1], R); land.push(v.x, v.y, v.z); }
-    sphere(ocean, R * 0.995, 900);
+    const R = 1.2, water: Arr = [], land: Arr = [], hi: Arr = [], arcs: Arr = [];
+    const N = extra.n as number, mask = extra.mask as string, golden = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2, rr = Math.sqrt(1 - y * y), a = golden * i;
+      const lat = (Math.asin(y) * 180) / Math.PI, lng = ((((a * 180) / Math.PI) % 360) + 540) % 360 - 180;
+      const c = mask[i], v = ll(lat, lng, c === '0' ? R * 0.997 : R);
+      (c === '0' ? water : c === '1' ? land : hi).push(v.x, v.y, v.z);
+      void rr;
+    }
     const g = new THREE.Group();
-    g.add(points(ocean, 0.016, 'faint'), points(land, 0.026, 'body'));
-    const hi: Arr = [];
-    for (let i = 0; i < extra.hi.length; i += 2) { const v = ll(extra.hi[i], extra.hi[i + 1], R * 1.003); hi.push(v.x, v.y, v.z); }
-    g.add(points(hi, 0.032, 'accent'));
+    g.add(points(water, 0.022, 'water'), points(land, 0.026, 'body'), points(hi, 0.032, 'accent'));
+
     const places = extra.places as { loc: [number, number] }[];
+    // marker clusters on each place
+    const marks: Arr = [];
+    places.forEach((p) => {
+      const c = ll(p.loc[0], p.loc[1], R * 1.012); marks.push(c.x, c.y, c.z);
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; const w = ll(p.loc[0] + Math.cos(a) * 2.4, p.loc[1] + Math.sin(a) * 3, R * 1.012); marks.push(w.x, w.y, w.z); }
+    });
+    g.add(points(marks, 0.06, 'accent'));
+
+    // dotted arcs + a path for the travelling light
+    const path: THREE.Vector3[] = [];
     for (let k = 1; k < places.length; k++) {
       const a = ll(places[k - 1].loc[0], places[k - 1].loc[1], R), b = ll(places[k].loc[0], places[k].loc[1], R);
-      for (let t = 0; t <= 1; t += 0.02) {
+      for (let t = 0; t <= 1.0001; t += 0.01) {
         const v = a.clone().lerp(b, t).normalize().multiplyScalar(R * (1 + 0.18 * Math.sin(Math.PI * t)));
-        arcs.push(v.x, v.y, v.z);
+        if (Math.round(t * 100) % 2 === 0) arcs.push(v.x, v.y, v.z);
+        path.push(v);
       }
+      for (let i = 0; i < 60; i++) path.push(path[path.length - 1]); // pause at each stop
     }
-    g.add(points(arcs, 0.026, 'accent'));
-    // face Europe / India at start
-    return { parts: [{ obj: g, spin: 1 }], tilt: 0.38, y: 0, startY: -(40 * Math.PI) / 180 };
+    for (let i = 0; i < 80; i++) path.push(path[path.length - 1]); // longer pause at the end
+    g.add(points(arcs, 0.024, 'faintAccent'));
+
+    // travelling light: a short comet that runs India -> Turkey -> Germany and repeats
+    const TRAIL = 14, trailArr = new Float32Array(TRAIL * 3);
+    const comet = points(Array.from(trailArr), 0.055, 'accent');
+    g.add(comet);
+    const pos = comet.geometry.getAttribute('position') as THREE.BufferAttribute;
+    const update = (time: number) => {
+      const head = Math.floor((time / 16) % path.length);
+      for (let j = 0; j < TRAIL; j++) {
+        const v = path[Math.max(0, head - j * 2)];
+        pos.setXYZ(j, v.x, v.y, v.z);
+      }
+      pos.needsUpdate = true;
+    };
+    return { parts: [{ obj: g, spin: 1 }], tilt: 0.38, y: 0, startY: -(40 * Math.PI) / 180, update };
   }
 
   function buildCap(): Built {
@@ -187,6 +217,8 @@ const { model, label, data } = Astro.props;
         if (kind === 'faint') { m.color = new THREE.Color(dark ? '#cfcfcf' : '#3a3a3a'); m.opacity = dark ? 0.18 : 0.14; }
         if (kind === 'accent') { m.color = new THREE.Color(dark ? '#60a5fa' : '#2563eb'); m.opacity = 0.95; }
         if (kind === 'color') { m.color = new THREE.Color(color); m.opacity = 1; }
+        if (kind === 'water') { m.color = new THREE.Color(dark ? '#3b82f6' : '#93c5fd'); m.opacity = dark ? 0.45 : 0.55; }
+        if (kind === 'faintAccent') { m.color = new THREE.Color(dark ? '#60a5fa' : '#2563eb'); m.opacity = 0.45; }
       });
     };
     theme();
@@ -223,7 +255,8 @@ const { model, label, data } = Astro.props;
     const end = () => { dragging = false; canvas.style.cursor = 'grab'; };
     canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
 
-    const frame = () => {
+    const frame = (t = 0) => {
+      if (built.update && !reduce) built.update(t);
       if (!reduce) built.parts.forEach((p) => { if (!(dragging && active.includes(p))) p.obj.rotation.y += 0.004 * p.spin; });
       renderer.render(scene, camera);
       requestAnimationFrame(frame);
