@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Social from '../components/Social.astro';
 interface Props { title?: string; description?: string }
 const { title, description = 'Aamir Khan — Technical Project Manager building AI products for clients around the world.' } = Astro.props;
 const full = title ? `${title} · Aamir Khan` : 'Aamir Khan';
@@ -29,7 +30,8 @@ const links = [['/about','About'],['/blog','Blog'],['/contact','Contact']];
 <main><slot /></main>
 <footer>
 <span>© {new Date().getFullYear()} Aamir Khan</span>
-<span><a href="https://www.linkedin.com/in/aamirkhan-tck">LinkedIn</a> · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></span>
+<Social size={18} />
+<span><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></span>
 </footer>
 </div>
 <script is:inline>

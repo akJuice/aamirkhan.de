@@ -30,3 +30,6 @@ article img{max-width:100%}
 .portrait{width:200px;height:240px;object-fit:cover;object-position:50% 20%;border-radius:16px;flex-shrink:0}
 .about-photo{width:100%;height:auto;max-height:520px;object-fit:cover;object-position:50% 25%;border-radius:16px;margin:8px 0 24px}
 @media (max-width:640px){.hero{flex-direction:column;align-items:flex-start;gap:20px}.portrait{width:140px;height:168px}}
+ul.social{list-style:none;display:flex;gap:18px;padding:0;margin:0;align-items:center}
+ul.social a{color:var(--muted);display:inline-flex;padding:4px;transition:color .15s}
+ul.social a:hover{color:var(--accent)}
