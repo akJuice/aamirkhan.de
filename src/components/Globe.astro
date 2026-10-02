@@ -11,61 +11,147 @@ const places = [
 const route = [0, 1, 2, 3, 5, 4, 5];
 ---
 <figure class="globe-wrap">
-  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: Bangalore, Bursa, Istanbul, Cologne, Aachen and Leonberg" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
+  <canvas id="globe" aria-label="3D globe tracing where Aamir has lived: Bangalore, Bursa, Istanbul, Cologne, Leonberg, Aachen and back to Leonberg" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
+  <p class="now" id="globe-now" aria-live="polite">&nbsp;</p>
   <figcaption>
-    <ol class="places">
-      {places.map((p) => <li><span class="dot" style={`background:${p.color}`}></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
+    <ol class="places" id="globe-legend">
+      {places.map((p, i) => <li data-i={i}><span class="dot" style={`background:${p.color}`}></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
     </ol>
   </figcaption>
 </figure>
 
 <script>
   import createGlobe from 'cobe';
+  type Place = { name: string; note: string; loc: [number, number]; color: string };
+  type V3 = [number, number, number];
   const canvas = document.getElementById('globe') as HTMLCanvasElement;
-  const places = JSON.parse(canvas.dataset.places!) as { loc: [number, number]; color: string }[];
-  const rgb = (h: string) => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16) / 255) as [number, number, number];
+  const nowEl = document.getElementById('globe-now')!;
+  const legend = [...document.querySelectorAll<HTMLLIElement>('#globe-legend li')];
+  const places = JSON.parse(canvas.dataset.places!) as Place[];
   const route = JSON.parse(canvas.dataset.route!) as number[];
+  const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255) as V3;
+
   const isDark = () => {
     const t = document.documentElement.dataset.theme;
     return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   };
-  const accent = () => (isDark() ? [0.38, 0.65, 0.98] : [0.15, 0.39, 0.92]) as [number, number, number];
-  const arcCol = () => (isDark() ? [0.6, 0.6, 0.6] : [0.45, 0.45, 0.45]) as [number, number, number];
+  const arcCol = () => (isDark() ? [0.65, 0.65, 0.65] : [0.4, 0.4, 0.4]) as V3;
   const colors = () => isDark()
-    ? { dark: 1, baseColor: [0.3, 0.3, 0.3] as [number,number,number], glowColor: [0.15, 0.15, 0.15] as [number,number,number], mapBrightness: 6 }
-    : { dark: 0, baseColor: [1, 1, 1] as [number,number,number], glowColor: [0.92, 0.92, 0.9] as [number,number,number], mapBrightness: 2 };
+    ? { dark: 1, baseColor: [0.3, 0.3, 0.3] as V3, glowColor: [0.15, 0.15, 0.15] as V3, mapBrightness: 6 }
+    : { dark: 0, baseColor: [1, 1, 1] as V3, glowColor: [0.92, 0.92, 0.9] as V3, mapBrightness: 2 };
 
-  // Start facing between India and Europe
-  let phi = 4.4, theta = 0.25, dragging = false, lastX = 0, lastY = 0, velocity = 0.003;
+  // cobe angles that put a lat/lng in the centre of the view
+  const angles = ([lat, lng]: [number, number]) => [Math.PI - ((lng * Math.PI) / 180 - Math.PI / 2), (lat * Math.PI) / 180];
+  // how far to zoom in on each place (dense regions need more)
+  const zoomFor = (i: number) => (places[i].name === 'Bangalore' ? 1.8 : places[i].loc[0] > 45 ? 4.6 : 4.2);
+
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let size = canvas.offsetWidth;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let size = canvas.offsetWidth;
+
+  const OVERVIEW = { phi: angles([30, 45])[0], theta: 0.35, scale: 1 };
+  let view = { ...OVERVIEW };
+
+  const allArcs = route.slice(1).map((to, i) => ({ from: places[route[i]].loc, to: places[to].loc }));
+  const markers = (cur: number | null, visited: Set<number>) =>
+    places.map((p, i) => ({ location: p.loc, color: rgb(p.color), size: i === cur ? 0.1 : visited.has(i) || cur === null ? 0.05 : 0.03 }));
 
   const globe = createGlobe(canvas, {
     devicePixelRatio: dpr, width: size * dpr, height: size * dpr,
-    phi, theta, diffuse: 1.2, mapSamples: 16000, mapBaseBrightness: 0,
-    ...colors(), markerColor: accent(), arcColor: arcCol(),
-    markers: places.map((p) => ({ location: p.loc, size: 0.05, color: rgb(p.color) })),
-    arcs: route.slice(1).map((to, i) => ({ from: places[route[i]].loc, to: places[to].loc })),
-    arcWidth: 0.6, arcHeight: 0.25, markerElevation: 0.02,
+    phi: view.phi, theta: view.theta, scale: 1, diffuse: 1.2, mapSamples: 20000, mapBaseBrightness: 0,
+    ...colors(), markerColor: [0.15, 0.39, 0.92], arcColor: arcCol(),
+    markers: markers(null, new Set()), arcs: allArcs,
+    arcWidth: 0.7, arcHeight: 0.2, markerElevation: 0.01,
   });
 
-  function frame() {
-    if (!dragging && !reduce) phi += velocity;
-    globe.update({ phi, theta });
+  const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const shortest = (from: number, to: number) => {
+    let d = (to - from) % (2 * Math.PI);
+    if (d > Math.PI) d -= 2 * Math.PI;
+    if (d < -Math.PI) d += 2 * Math.PI;
+    return from + d;
+  };
+
+  function highlight(cur: number | null) {
+    legend.forEach((li, i) => li.classList.toggle('active', i === cur));
+    document.getElementById('globe-legend')!.classList.toggle('touring', cur !== null);
+    nowEl.textContent = cur === null ? '\u00a0' : `${places[cur].name} · ${places[cur].note}`;
+  }
+
+  // ---- the tour: a list of timed segments ----
+  type Seg = { dur: number; to: typeof view; stop: number | null; step: number };
+  const TRAVEL = 1800, HOLD = 2200;
+  const segments: Seg[] = [];
+  route.forEach((pi, step) => {
+    const [phi, theta] = angles(places[pi].loc);
+    const to = { phi, theta, scale: zoomFor(pi) };
+    segments.push({ dur: TRAVEL, to, stop: pi, step }, { dur: HOLD, to, stop: pi, step });
+  });
+  segments.push({ dur: TRAVEL + 400, to: OVERVIEW, stop: null, step: route.length }, { dur: 6000, to: OVERVIEW, stop: null, step: route.length });
+
+  let segIndex = -1, segStart = 0, from = { ...view }, paused = false, idleTimer = 0;
+  let dragging = false, lastX = 0, lastY = 0;
+
+  function startSeg(i: number, now: number) {
+    segIndex = i % segments.length;
+    segStart = now;
+    from = { ...view };
+    const seg = segments[segIndex];
+    seg.to = { ...seg.to, phi: shortest(from.phi, seg.to.phi) };
+    const visited = new Set(route.slice(0, seg.step + 1));
+    const isFinal = seg.stop === null;
+    globe.update({
+      markers: markers(seg.stop, isFinal ? new Set(route) : visited),
+      arcs: isFinal ? allArcs : allArcs.slice(0, seg.step),
+    });
+    highlight(seg.stop);
+  }
+
+  function frame(now: number) {
+    if (!paused && !reduce) {
+      if (segIndex < 0) startSeg(0, now);
+      const seg = segments[segIndex];
+      const t = Math.min(1, (now - segStart) / seg.dur);
+      const e = ease(t);
+      const far = Math.abs(seg.to.phi - from.phi) + Math.abs(seg.to.theta - from.theta) > 0.6;
+      const dip = far ? Math.sin(Math.PI * t) * Math.max(0, Math.min(from.scale, seg.to.scale) - 1.2) : 0;
+      view = {
+        phi: from.phi + (seg.to.phi - from.phi) * e,
+        theta: from.theta + (seg.to.theta - from.theta) * e,
+        scale: Math.max(1, from.scale + (seg.to.scale - from.scale) * e - dip),
+      };
+      if (seg.stop === null && seg.dur > 5000) view.phi = from.phi + (now - segStart) * 0.00025; // gentle spin on overview
+      if (t >= 1) startSeg(segIndex + 1, now);
+    } else if (paused && !dragging) {
+      view.scale += (1 - view.scale) * 0.08;
+      view.phi += 0.002;
+    }
+    globe.update({ phi: view.phi, theta: view.theta, scale: view.scale });
     requestAnimationFrame(frame);
   }
+  if (reduce) { globe.update({ markers: markers(null, new Set(route)) }); }
   requestAnimationFrame(frame);
   canvas.style.opacity = '1';
 
-  canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; });
+  // ---- dragging pauses the tour; it resumes after a few idle seconds ----
+  canvas.addEventListener('pointerdown', (e) => {
+    dragging = true; paused = true; lastX = e.clientX; lastY = e.clientY;
+    canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing';
+    clearTimeout(idleTimer);
+    globe.update({ markers: markers(null, new Set(route)), arcs: allArcs });
+    highlight(null);
+  });
   canvas.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    phi += (e.clientX - lastX) * 0.008;
-    theta = Math.max(-0.6, Math.min(0.9, theta + (e.clientY - lastY) * 0.006));
+    view.phi += ((e.clientX - lastX) * 0.008) / view.scale;
+    view.theta = Math.max(-0.6, Math.min(1.1, view.theta + ((e.clientY - lastY) * 0.006) / view.scale));
     lastX = e.clientX; lastY = e.clientY;
   });
-  const end = () => { dragging = false; canvas.style.cursor = 'grab'; };
+  const end = () => {
+    if (!dragging) return;
+    dragging = false; canvas.style.cursor = 'grab';
+    idleTimer = window.setTimeout(() => { paused = false; segIndex = -1; }, 6000);
+  };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);
 
@@ -80,5 +166,9 @@ const route = [0, 1, 2, 3, 5, 4, 5];
   #globe { width: 100%; max-width: 440px; aspect-ratio: 1; display: block; margin: 0 auto; cursor: grab; touch-action: pan-y; opacity: 0; transition: opacity .8s; }
   .places { list-style: none; padding: 0; margin: 16px auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; font-size: .95rem; }
   .places li { display: flex; align-items: center; gap: 8px; }
+  .now { text-align: center; margin: 12px 0 0; font-weight: 600; min-height: 1.6em; }
+  .places li { transition: opacity .3s; }
+  .places.touring li { opacity: .4; }
+  .places.touring li.active { opacity: 1; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 </style>
