@@ -1,0 +1,129 @@
+---
+---
+<div class="cap-wrap">
+  <canvas id="gradcap" aria-label="Rotating 3D graduation cap"></canvas>
+</div>
+
+<script>
+  import * as THREE from 'three';
+
+  const canvas = document.getElementById('gradcap') as HTMLCanvasElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+
+  // ---- build the cap as a cloud of dots (same dotted style as the globe) ----
+  const body: number[] = [];
+  const tassel: number[] = [];
+  const S = 0.055; // dot spacing
+
+  // Board: flat square, slightly thick
+  const half = 1.15, topY = 0.32, thick = 0.06;
+  for (let x = -half; x <= half + 1e-6; x += S)
+    for (let z = -half; z <= half + 1e-6; z += S) {
+      body.push(x, topY, z);
+      const edge = Math.abs(Math.abs(x) - half) < S / 2 || Math.abs(Math.abs(z) - half) < S / 2;
+      if (edge) body.push(x, topY - thick, z);
+    }
+  // Skull cap: slightly tapered band under the board
+  const rTop = 0.62, rBot = 0.7, yTop = topY - thick, yBot = -0.42;
+  for (let y = yBot; y <= yTop + 1e-6; y += S * 0.9) {
+    const t = (y - yBot) / (yTop - yBot);
+    const r = rBot + (rTop - rBot) * t;
+    const n = Math.round((2 * Math.PI * r) / S);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      body.push(Math.cos(a) * r, y, Math.sin(a) * r);
+    }
+  }
+  // Button on top
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2;
+    body.push(Math.cos(a) * 0.07, topY + 0.03, Math.sin(a) * 0.07);
+  }
+  // Tassel: cord from button to a corner, then hanging down, ending in a fringe
+  const corner = new THREE.Vector3(half * 0.92, topY + 0.02, half * 0.92);
+  const start = new THREE.Vector3(0, topY + 0.04, 0);
+  for (let t = 0; t <= 1; t += 0.03) {
+    const p = start.clone().lerp(corner, t);
+    tassel.push(p.x, p.y, p.z);
+  }
+  for (let y = corner.y; y >= corner.y - 0.75; y -= 0.035) tassel.push(corner.x, y, corner.z);
+  for (let i = 0; i < 60; i++) {
+    const a = Math.random() * Math.PI * 2, rr = Math.random() * 0.09;
+    const y = corner.y - 0.75 - Math.random() * 0.3;
+    tassel.push(corner.x + Math.cos(a) * rr, y, corner.z + Math.sin(a) * rr);
+  }
+
+  const makePoints = (arr: number[], size: number) => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
+    const m = new THREE.PointsMaterial({ size, sizeAttenuation: true, transparent: true, depthWrite: false });
+    return new THREE.Points(g, m);
+  };
+  const capPts = makePoints(body, 0.028);
+  const tasselPts = makePoints(tassel, 0.034);
+
+  const group = new THREE.Group();
+  group.add(capPts, tasselPts);
+  group.rotation.x = 0.42;
+  group.position.y = 0.12;
+
+  const scene = new THREE.Scene();
+  scene.add(group);
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
+  camera.position.set(0, 0, 6);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+  function applyTheme() {
+    const dark = isDark();
+    const bg = getComputedStyle(document.body).backgroundColor;
+    scene.fog = new THREE.Fog(new THREE.Color(bg), 5.0, 8.2); // dots further back fade, like depth on the globe
+    (capPts.material as THREE.PointsMaterial).color = new THREE.Color(dark ? '#cfcfcf' : '#3a3a3a');
+    (capPts.material as THREE.PointsMaterial).opacity = dark ? 0.85 : 0.75;
+    (tasselPts.material as THREE.PointsMaterial).color = new THREE.Color(dark ? '#60a5fa' : '#2563eb');
+    (tasselPts.material as THREE.PointsMaterial).opacity = 0.95;
+  }
+  applyTheme();
+  new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+
+  function resize() {
+    const w = canvas.clientWidth;
+    renderer.setSize(w, w, false);
+    camera.aspect = 1;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ---- motion: slow spin, drag to rotate ----
+  let dragging = false, lastX = 0, lastY = 0;
+  canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    group.rotation.y += (e.clientX - lastX) * 0.008;
+    group.rotation.x = Math.max(-0.2, Math.min(1.1, group.rotation.x + (e.clientY - lastY) * 0.006));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  const end = () => { dragging = false; canvas.style.cursor = 'grab'; };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+
+  function frame() {
+    if (!dragging && !reduce) group.rotation.y += 0.004;
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+  canvas.style.opacity = '1';
+</script>
+
+<style>
+  .cap-wrap { width: 100%; }
+  #gradcap { width: 100%; max-width: 440px; aspect-ratio: 1; display: block; margin: 0 auto; cursor: grab; touch-action: pan-y; opacity: 0; transition: opacity .8s; }
+</style>

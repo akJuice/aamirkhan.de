@@ -14,7 +14,11 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.3.5",
-    "cobe": "^2.0.1"
+    "cobe": "^2.0.1",
+    "three": "^0.186.1"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/three": "^0.186.0"
+  }
 }
