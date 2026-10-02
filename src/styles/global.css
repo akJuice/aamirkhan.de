@@ -120,3 +120,9 @@ a.inline-arrow:hover .arrow,a.inline-arrow:focus-visible .arrow{transform:transl
 .story-journey h2{margin:0 0 12px}
 .story-journey .globe-wrap{margin:0}
 @media (max-width:860px){.story-journey{grid-template-columns:1fr}}
+/* About me: one shared centre line for every text / object pair */
+.story-journey,.story-mirror{grid-template-columns:1fr 1fr;column-gap:clamp(40px,6vw,96px)}
+.story-journey > div:first-child{justify-self:end;max-width:52ch;width:100%}
+.story-mirror > div:last-child{justify-self:start;max-width:52ch;width:100%}
+.story-journey > :last-child,.story-mirror > :first-child{justify-self:center;width:100%;max-width:440px}
+@media (max-width:860px){.story-journey,.story-mirror{grid-template-columns:1fr}.story-journey > div:first-child,.story-mirror > div:last-child{justify-self:stretch;max-width:none}}

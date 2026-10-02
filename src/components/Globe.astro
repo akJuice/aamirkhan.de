@@ -1,14 +1,28 @@
 ---
+import DotModel from './DotModel.astro';
+import { geoContains } from 'd3-geo';
+import { feature } from 'topojson-client';
+import world from 'world-atlas/land-110m.json';
+
 const places = [
-  { name: 'India', note: 'Born in Bangalore', loc: [20.6, 78.9], color: '#f97316' },
-  { name: 'Turkey', note: 'Childhood, 2005–2016', loc: [39.0, 35.2], color: '#e11d48' },
-  { name: 'Germany', note: 'Since 2016', loc: [51.1, 10.4], color: '#2563eb' },
+  { name: 'India', note: 'Born in Bangalore', loc: [20.6, 78.9] as [number, number], color: '#f97316' },
+  { name: 'Turkey', note: 'Childhood, 2005–2016', loc: [39.0, 35.2] as [number, number], color: '#e11d48' },
+  { name: 'Germany', note: 'Since 2016', loc: [51.1, 10.4] as [number, number], color: '#2563eb' },
 ];
-// Journey in order (indexes into places)
-const route = [0, 1, 2];
+
+// Land dots: evenly spaced points on a sphere, kept only where there is land (computed at build time)
+const land = feature(world as any, (world as any).objects.land) as any;
+const N = 9000, pts: number[] = [];
+const golden = Math.PI * (3 - Math.sqrt(5));
+for (let i = 0; i < N; i++) {
+  const y = 1 - (i / (N - 1)) * 2, a = golden * i;
+  const lat = (Math.asin(y) * 180) / Math.PI;
+  const lng = ((((a * 180) / Math.PI) % 360) + 540) % 360 - 180;
+  if (geoContains(land, [lng, lat])) pts.push(Math.round(lat * 10) / 10, Math.round(lng * 10) / 10);
+}
 ---
 <figure class="globe-wrap">
-  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: India, Turkey and Germany" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
+  <DotModel model="globe" label="3D globe marking where Aamir has lived: India, Turkey and Germany" data={{ land: pts, places }} />
   <figcaption>
     <ol class="places">
       {places.map((p) => <li><span class="dot" style={`background:${p.color}`}></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
@@ -16,66 +30,9 @@ const route = [0, 1, 2];
   </figcaption>
 </figure>
 
-<script>
-  import createGlobe from 'cobe';
-  const canvas = document.getElementById('globe') as HTMLCanvasElement;
-  const places = JSON.parse(canvas.dataset.places!) as { loc: [number, number]; color: string }[];
-  const rgb = (h: string) => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16) / 255) as [number, number, number];
-  const route = JSON.parse(canvas.dataset.route!) as number[];
-  const isDark = () => {
-    const t = document.documentElement.dataset.theme;
-    return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  };
-  const accent = () => (isDark() ? [0.38, 0.65, 0.98] : [0.15, 0.39, 0.92]) as [number, number, number];
-  const arcCol = () => (isDark() ? [0.6, 0.6, 0.6] : [0.45, 0.45, 0.45]) as [number, number, number];
-  const colors = () => isDark()
-    ? { dark: 1, baseColor: [0.3, 0.3, 0.3] as [number,number,number], glowColor: [0.15, 0.15, 0.15] as [number,number,number], mapBrightness: 6 }
-    : { dark: 0, baseColor: [1, 1, 1] as [number,number,number], glowColor: [0.92, 0.92, 0.9] as [number,number,number], mapBrightness: 2 };
-
-  // Start facing between India and Europe
-  let phi = 4.4, theta = 0.25, dragging = false, lastX = 0, lastY = 0, velocity = 0.003;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let size = canvas.offsetWidth;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-  const globe = createGlobe(canvas, {
-    devicePixelRatio: dpr, width: size * dpr, height: size * dpr,
-    phi, theta, diffuse: 1.2, mapSamples: 16000, mapBaseBrightness: 0,
-    ...colors(), markerColor: accent(), arcColor: arcCol(),
-    markers: places.map((p) => ({ location: p.loc, size: 0.07, color: rgb(p.color) })),
-    arcs: route.slice(1).map((to, i) => ({ from: places[route[i]].loc, to: places[to].loc })),
-    arcWidth: 0.6, arcHeight: 0.25, markerElevation: 0.02,
-  });
-
-  function frame() {
-    if (!dragging && !reduce) phi += velocity;
-    globe.update({ phi, theta });
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-  canvas.style.opacity = '1';
-
-  canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    phi += (e.clientX - lastX) * 0.008;
-    theta = Math.max(-0.6, Math.min(0.9, theta + (e.clientY - lastY) * 0.006));
-    lastX = e.clientX; lastY = e.clientY;
-  });
-  const end = () => { dragging = false; canvas.style.cursor = 'grab'; };
-  canvas.addEventListener('pointerup', end);
-  canvas.addEventListener('pointercancel', end);
-
-  const refresh = () => globe.update({ ...colors(), arcColor: arcCol() });
-  new MutationObserver(refresh).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refresh);
-  window.addEventListener('resize', () => { size = canvas.offsetWidth; globe.update({ width: size * dpr, height: size * dpr }); });
-</script>
-
 <style>
-  .globe-wrap { margin: 24px 0 32px; }
-  #globe { width: 100%; max-width: 440px; aspect-ratio: 1; display: block; margin: 0 auto; cursor: grab; touch-action: pan-y; opacity: 0; transition: opacity .8s; }
+  .globe-wrap { margin: 0; }
   .places { list-style: none; padding: 0; margin: 16px auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; font-size: .95rem; }
   .places li { display: flex; align-items: center; gap: 8px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 </style>
