@@ -1,13 +1,34 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-const posts = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
+const all = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
+const groups = [
+  { key: 'professional', title: 'Professional', empty: 'Coming soon.' },
+  { key: 'personal', title: 'Personal', empty: 'Coming soon.' },
+];
 const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 ---
-<Base title="Blog" description="Notes on AI products, project delivery and life between cultures.">
+<Base title="Blog" description="Professional and personal writing by Aamir Khan.">
 <h1>Blog</h1>
-<p class="lead">Notes on AI products, project delivery, and things I'm learning.</p>
-<ul class="list">
-{posts.map(p => <li><a href={`/blog/${p.id}/`}>{p.data.title}</a><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time></li>)}
-</ul>
+<p class="lead">Writing on AI, product delivery, and life.</p>
+{groups.map(g => {
+  const posts = all.filter(p => p.data.category === g.key);
+  return (
+    <section>
+      <h2>{g.title}</h2>
+      {posts.length === 0 ? <p class="muted">{g.empty}</p> :
+      <ul class="list">
+        {posts.map(p => (
+          <li>
+            <span>
+              <a href={p.data.externalUrl ?? `/blog/${p.id}/`} {...(p.data.externalUrl ? { target: '_blank', rel: 'noopener' } : {})}>{p.data.title}{p.data.externalUrl && ' ↗'}</a>
+              {p.data.publisher && <span class="muted"> · on {p.data.publisher}</span>}
+            </span>
+            <time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+          </li>
+        ))}
+      </ul>}
+    </section>
+  );
+})}
 </Base>

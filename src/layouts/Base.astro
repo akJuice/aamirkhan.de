@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 interface Props { title?: string; description?: string }
-const { title, description = 'Aamir Khan — Technical Project Manager building AI products in the DACH market.' } = Astro.props;
+const { title, description = 'Aamir Khan — Technical Project Manager building AI products for clients around the world.' } = Astro.props;
 const full = title ? `${title} · Aamir Khan` : 'Aamir Khan';
 const path = Astro.url.pathname;
 const links = [['/about','About'],['/blog','Blog'],['/contact','Contact']];
