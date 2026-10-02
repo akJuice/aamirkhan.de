@@ -98,3 +98,13 @@ a.tck:hover .tck-arrow,a.tck:focus-visible .tck-arrow{transform:translateX(5px)}
 a.tck{padding:6px 13px;margin:0 -13px;border-radius:999px;transition:color .25s,background .25s,box-shadow .25s}
 a.tck:hover,a.tck:focus-visible{background:color-mix(in srgb,var(--accent) 8%,transparent);box-shadow:0 2px 12px color-mix(in srgb,var(--accent) 12%,transparent)}
 .story-row{border-top:none}
+/* Blog list: no divider lines */
+.posts li{border-bottom:none;padding:12px 0}
+/* Filter tabs: borderless, active gets a soft tint */
+.tabs{gap:4px}
+.tabs button{border:none;background:transparent;color:var(--muted);padding:6px 14px;transition:color .2s,background .2s}
+.tabs button:hover{color:var(--text);background:transparent}
+.tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 9%,transparent);color:var(--text);font-weight:500}
+/* Footer always at the bottom */
+.wrap{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.wrap > main{flex:1}
