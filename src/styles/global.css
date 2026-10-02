@@ -58,3 +58,7 @@ ul.social a:hover{color:var(--accent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ff-light{display:none!important}:root:not([data-theme="light"]) .ff-dark{display:block!important}}
 :root[data-theme="dark"] .ff-light{display:none!important}
 :root[data-theme="dark"] .ff-dark{display:block!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.greet{min-height:2.4em;display:flex;align-items:flex-end}
+.greet-text{display:inline-block;transition:opacity .35s ease,transform .35s ease,filter .35s ease}
+.greet-text.out{opacity:0;transform:translateY(8px);filter:blur(4px)}

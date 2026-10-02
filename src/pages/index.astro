@@ -8,9 +8,38 @@ import FeatherFlow from '../components/FeatherFlow.astro';
 <div class="hero">
 <Image src={photo} alt="Portrait of Aamir Khan" widths={[400,800]} sizes="(max-width: 860px) 60vw, 400px" class="portrait" loading="eager" />
 <div>
-<h1>Hi, I'm Aamir.</h1>
+<h1 class="greet">
+<span class="sr-only">Hi, I'm Aamir.</span>
+<span class="greet-text" id="greet" aria-hidden="true">Hi, I'm Aamir.</span>
+</h1>
 <p class="lead">Technical Project Manager at <FeatherFlow />. I help companies and ambitious founders around the world turn AI ideas into real products.</p>
 <p class="lead">A third culture kid, raised between India, Turkey and Germany.</p>
 </div>
 </div>
 </Base>
+
+<script>
+  const greetings: [string, string?][] = [
+    ["Hi, I'm Aamir."],
+    ['Hallo, ich bin Aamir.'],
+    ['Merhaba, ben Aamir.'],
+    ['नमस्ते, मैं आमिर हूँ।'],
+    ['سلام، میں عامر ہوں۔', 'rtl'],
+    ['Ciao, sono Aamir.'],
+  ];
+  const el = document.getElementById('greet')!;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0;
+  if (!reduce) {
+    setInterval(() => {
+      el.classList.add('out');
+      setTimeout(() => {
+        i = (i + 1) % greetings.length;
+        const [text, dir] = greetings[i];
+        el.textContent = text;
+        el.dir = dir ?? 'ltr';
+        el.classList.remove('out');
+      }, 350);
+    }, 2200);
+  }
+</script>
