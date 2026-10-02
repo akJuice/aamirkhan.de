@@ -1,0 +1,76 @@
+---
+const places = [
+  { name: 'Bangalore, India', note: 'Born', loc: [12.97, 77.59] },
+  { name: 'Turkey', note: '2005–2016 · Childhood', loc: [39.0, 35.0] },
+  { name: 'Cologne, Germany', note: 'Since 2016', loc: [50.94, 6.96] },
+];
+---
+<figure class="globe-wrap">
+  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: Bangalore, Turkey and Cologne" data-places={JSON.stringify(places)}></canvas>
+  <figcaption>
+    <ol class="places">
+      {places.map((p) => <li><span class="dot"></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
+    </ol>
+  </figcaption>
+</figure>
+
+<script>
+  import createGlobe from 'cobe';
+  const canvas = document.getElementById('globe') as HTMLCanvasElement;
+  const places = JSON.parse(canvas.dataset.places!) as { loc: [number, number] }[];
+  const isDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+  const accent = () => (isDark() ? [0.38, 0.65, 0.98] : [0.15, 0.39, 0.92]) as [number, number, number];
+  const colors = () => isDark()
+    ? { dark: 1, baseColor: [0.3, 0.3, 0.3] as [number,number,number], glowColor: [0.15, 0.15, 0.15] as [number,number,number], mapBrightness: 6 }
+    : { dark: 0, baseColor: [1, 1, 1] as [number,number,number], glowColor: [0.92, 0.92, 0.9] as [number,number,number], mapBrightness: 2 };
+
+  // Start facing between India and Europe
+  let phi = 4.4, theta = 0.25, dragging = false, lastX = 0, lastY = 0, velocity = 0.003;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let size = canvas.offsetWidth;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  const globe = createGlobe(canvas, {
+    devicePixelRatio: dpr, width: size * dpr, height: size * dpr,
+    phi, theta, diffuse: 1.2, mapSamples: 16000, mapBaseBrightness: 0,
+    ...colors(), markerColor: accent(), arcColor: accent(),
+    markers: places.map((p) => ({ location: p.loc, size: 0.06 })),
+    arcs: places.slice(1).map((p, i) => ({ from: places[i].loc, to: p.loc })),
+    arcWidth: 0.6, arcHeight: 0.25, markerElevation: 0.02,
+  });
+
+  function frame() {
+    if (!dragging && !reduce) phi += velocity;
+    globe.update({ phi, theta });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  canvas.style.opacity = '1';
+
+  canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    phi += (e.clientX - lastX) * 0.008;
+    theta = Math.max(-0.6, Math.min(0.9, theta + (e.clientY - lastY) * 0.006));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  const end = () => { dragging = false; canvas.style.cursor = 'grab'; };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+
+  const refresh = () => globe.update({ ...colors(), markerColor: accent(), arcColor: accent() });
+  new MutationObserver(refresh).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refresh);
+  window.addEventListener('resize', () => { size = canvas.offsetWidth; globe.update({ width: size * dpr, height: size * dpr }); });
+</script>
+
+<style>
+  .globe-wrap { margin: 24px 0 32px; }
+  #globe { width: 100%; max-width: 440px; aspect-ratio: 1; display: block; margin: 0 auto; cursor: grab; touch-action: pan-y; opacity: 0; transition: opacity .8s; }
+  .places { list-style: none; padding: 0; margin: 16px auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; font-size: .95rem; }
+  .places li { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+</style>
