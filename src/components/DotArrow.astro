@@ -1,11 +1,25 @@
 ---
-// Arrow drawn from dots, in the same dotted style as the 3D objects
+// Small 3D dotted arrow: every dot is a shaded sphere with a soft offset "depth" layer behind it,
+// so it reads as the same dotted 3D material as the globe, cap and laptop. It does not rotate.
 interface Props { dir?: 'right' | 'left' }
 const { dir = 'right' } = Astro.props;
 const dots = [[2,8],[5,8],[8,8],[11,8],[14,8],[11,5],[11,11],[8,2],[8,14]];
+const id = `da${Math.random().toString(36).slice(2, 8)}`;
 ---
-<svg class:list={['dot-arrow', dir === 'left' && 'left']} width="0.95em" height="0.95em" viewBox="0 0 16 16" aria-hidden="true" style={dir === 'left' ? 'transform-origin:center' : undefined}>
-  <g fill="currentColor" transform={dir === 'left' ? 'rotate(180 8 8)' : undefined}>
-    {dots.map(([x, y]) => <circle cx={x} cy={y} r="1.35" />)}
+<svg class:list={['dot-arrow', dir === 'left' && 'left']} width="1.05em" height="1.05em" viewBox="0 0 17 17" aria-hidden="true">
+  <defs>
+    <radialGradient id={id} cx="35%" cy="32%" r="70%">
+      <stop offset="0%" stop-color="currentColor" stop-opacity="0.55" />
+      <stop offset="55%" stop-color="currentColor" stop-opacity="1" />
+      <stop offset="100%" stop-color="currentColor" stop-opacity="1" />
+    </radialGradient>
+  </defs>
+  <g transform={dir === 'left' ? 'rotate(180 8.5 8.5)' : undefined}>
+    <g fill="currentColor" opacity="0.22" transform="translate(1 1)">
+      {dots.map(([x, y]) => <circle cx={x} cy={y} r="1.35" />)}
+    </g>
+    <g fill={`url(#${id})`}>
+      {dots.map(([x, y]) => <circle cx={x} cy={y} r="1.45" />)}
+    </g>
   </g>
 </svg>

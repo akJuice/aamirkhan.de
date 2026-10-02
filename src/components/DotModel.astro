@@ -203,18 +203,33 @@ const { model, label, data } = Astro.props;
     }
   }
   function buildPlane(): Built {
+    // Same construction as the cap & laptop: surfaces on an even dot grid, edges doubled for definition
     const body: Arr = [], accent: Arr = [];
     const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
-    const nose = V(1.25, 0.05, 0), tail = V(-1.05, 0.05, 0), keel = V(-0.95, -0.32, 0);
-    tri(body, nose, tail, V(-1.1, 0.12, 0.85));   // right wing
-    tri(body, nose, tail, V(-1.1, 0.12, -0.85));  // left wing
-    tri(body, nose, tail, keel, S * 1.1);         // keel
-    for (let t = 0; t <= 1; t += 0.02) { const p = nose.clone().lerp(tail, t); accent.push(p.x, p.y + 0.01, p.z); } // centre fold
-    // dotted flight trail behind the plane
-    for (let t = 0; t <= 1; t += 0.035) accent.push(-1.25 - t * 1.1, 0.05 - Math.sin(t * Math.PI) * 0.35 - t * 0.2, Math.sin(t * Math.PI * 1.5) * 0.25);
+    const surf = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) => {
+      // even grid inside triangle abc (like the cap board)
+      const ab = b.clone().sub(a), ac = c.clone().sub(a);
+      const n = Math.ceil(Math.max(ab.length(), ac.length()) / (S * 1.15));
+      for (let i = 0; i <= n; i++) for (let j = 0; j <= n - i; j++) {
+        const p = a.clone().add(ab.clone().multiplyScalar(i / n)).add(ac.clone().multiplyScalar(j / n));
+        body.push(p.x, p.y, p.z);
+      }
+      // outline edges, denser
+      for (const [u, v] of [[a, b], [b, c], [c, a]] as const) {
+        const L = u.distanceTo(v), m = Math.ceil(L / (S * 0.6));
+        for (let k = 0; k <= m; k++) { const q = u.clone().lerp(v, k / m); body.push(q.x, q.y, q.z); }
+      }
+    };
+    const nose = V(1.35, 0.1, 0), tail = V(-1.15, 0.1, 0), keel = V(-1.0, -0.38, 0);
+    const wR = V(-1.2, 0.2, 0.95), wL = V(-1.2, 0.2, -0.95);
+    surf(nose, tail, wR); surf(nose, tail, wL); surf(nose, tail, keel);
+    // centre fold in blue, like the cap's tassel
+    for (let t = 0; t <= 1; t += 0.018) { const q = nose.clone().lerp(tail, t); accent.push(q.x, q.y + 0.012, q.z); }
+    // short dotted flight trail
+    for (let t = 0.05; t <= 1; t += 0.05) accent.push(-1.3 - t * 0.9, 0.1 - Math.sin(t * Math.PI) * 0.28 - t * 0.15, Math.sin(t * Math.PI * 1.4) * 0.2);
     const g = new THREE.Group(); g.add(points(body, 0.028, 'body'), points(accent, 0.034, 'accent'));
-    g.rotation.z = 0.12;
-    return { parts: [{ obj: g, spin: 1 }], tilt: 0.35, y: 0.05, startY: -0.6, noFog: true };
+    g.rotation.z = 0.14;
+    return { parts: [{ obj: g, spin: 1 }], tilt: 0.42, y: 0.05, startY: -0.7, noFog: true };
   }
 
   // ---------- render each canvas ----------
