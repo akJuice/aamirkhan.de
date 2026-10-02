@@ -13,7 +13,10 @@ const links = [['/about','My story'],['/blog','Blog'],['/contact','Contact']];
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>{full}</title><meta name="description" content={description} />
 <link rel="canonical" href={new URL(path, Astro.site)} />
+<meta property="og:type" content="website" /><meta property="og:url" content={new URL(path, Astro.site)} />
 <meta property="og:title" content={full} /><meta property="og:description" content={description} />
+<meta property="og:image" content={new URL("/og.jpg", Astro.site)} /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:image:alt" content="Aamir Khan" />
+<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="@AamirBuilds" /><meta name="twitter:image" content={new URL("/og.jpg", Astro.site)} />
 <link rel="alternate" type="application/rss+xml" title="Aamir Khan" href="/rss.xml" />
 <link rel="icon" href="/favicon.svg" />
 <script is:inline>try{const t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
