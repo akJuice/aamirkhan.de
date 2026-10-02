@@ -116,3 +116,7 @@ a.inline-arrow:hover .arrow,a.inline-arrow:focus-visible .arrow{transform:transl
 .story-mirror{grid-template-columns:minmax(280px,420px) 1fr}
 .story-mirror h2{margin:0 0 12px}
 @media (max-width:860px){.story-mirror{grid-template-columns:1fr}.story-mirror > div{order:-1}}
+.story-journey{grid-template-columns:1fr minmax(280px,420px)}
+.story-journey h2{margin:0 0 12px}
+.story-journey .globe-wrap{margin:0}
+@media (max-width:860px){.story-journey{grid-template-columns:1fr}}
