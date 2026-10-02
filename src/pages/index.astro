@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf()).slice(0,3);
+const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+---
+<Base>
+<h1>Hi, I'm Aamir.</h1>
+<p class="lead">Technical Project Manager at FeatherFlow, where I help companies in the DACH region turn AI ideas into real products. I grew up between cultures, speak four languages, and like making complex things simple.</p>
+<p><a href="/about">More about me →</a></p>
+<h2>Latest writing</h2>
+<ul class="list">
+{posts.map(p => <li><a href={`/blog/${p.id}/`}>{p.data.title}</a><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time></li>)}
+</ul>
+<p><a href="/blog">All posts →</a></p>
+</Base>
