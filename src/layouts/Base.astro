@@ -5,7 +5,7 @@ interface Props { title?: string; description?: string }
 const { title, description = 'Aamir Khan — Technical Project Manager helping companies and ambitious founders turn AI ideas into real products.' } = Astro.props;
 const full = title ? `${title} · Aamir Khan` : 'Aamir Khan';
 const path = Astro.url.pathname;
-const links = [['/about','About'],['/blog','Blog'],['/contact','Contact']];
+const links = [['/about','My story'],['/blog','Blog'],['/contact','Contact']];
 ---
 <!doctype html>
 <html lang="en">
