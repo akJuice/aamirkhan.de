@@ -9,7 +9,7 @@ const groups = [
 const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 ---
 <Base title="Blog" description="Professional and personal writing by Aamir Khan.">
-<h1>Blog</h1>
+<h1 class="blog-title">Blog <a class="rss-link" href="/rss.xml" aria-label="Subscribe via RSS" title="RSS feed"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="19" r="2.4"/><path d="M2.6 9.6v3.2a8.6 8.6 0 0 1 8.6 8.6h3.2A11.8 11.8 0 0 0 2.6 9.6Z"/><path d="M2.6 3.2v3.2a15 15 0 0 1 15 15h3.2A18.2 18.2 0 0 0 2.6 3.2Z"/></svg></a></h1>
 <p class="lead">Writing on AI, product delivery, and life.</p>
 {groups.map(g => {
   const posts = all.filter(p => p.data.category === g.key);

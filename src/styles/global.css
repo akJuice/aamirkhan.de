@@ -62,3 +62,4 @@ ul.social a:hover{color:var(--accent)}
 .greet{min-height:2.4em;display:flex;align-items:flex-end}
 .greet-text{display:inline-block;transition:opacity .35s ease,transform .35s ease,filter .35s ease}
 .greet-text.out{opacity:0;transform:translateY(8px);filter:blur(4px)}
+.blog-title{display:flex;align-items:center;gap:14px}.rss-link{color:var(--muted);display:inline-flex}.rss-link:hover{color:#f26522}
