@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Social from '../components/Social.astro';
 interface Props { title?: string; description?: string }
-const { title, description = 'Aamir Khan — Technical Project Manager building AI products for clients around the world.' } = Astro.props;
+const { title, description = 'Aamir Khan — Technical Project Manager helping companies and ambitious founders turn AI ideas into real products.' } = Astro.props;
 const full = title ? `${title} · Aamir Khan` : 'Aamir Khan';
 const path = Astro.url.pathname;
 const links = [['/about','About'],['/blog','Blog'],['/contact','Contact']];
