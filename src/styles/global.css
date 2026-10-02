@@ -97,5 +97,3 @@ a.tck:hover .tck-arrow,a.tck:focus-visible .tck-arrow{transform:translateX(5px)}
 .ff-chip:hover{background:color-mix(in srgb,#6160FF 8%,transparent);box-shadow:0 2px 12px rgba(97,96,255,.12)!important}
 a.tck{padding:6px 13px;margin:0 -13px;border-radius:999px;transition:color .25s,background .25s,box-shadow .25s}
 a.tck:hover,a.tck:focus-visible{background:color-mix(in srgb,var(--accent) 8%,transparent);box-shadow:0 2px 12px color-mix(in srgb,var(--accent) 12%,transparent)}
-/* Soft fade: photo dissolves into the page */
-.portrait,.about-photo{border-radius:0;-webkit-mask-image:radial-gradient(ellipse 72% 70% at 50% 42%,#000 50%,transparent 100%);mask-image:radial-gradient(ellipse 72% 70% at 50% 42%,#000 50%,transparent 100%)}
