@@ -133,3 +133,5 @@ a.quiet-link:hover,a.quiet-link:focus-visible{color:var(--text)}
 .story-intro{margin-bottom:24px}
 .story-journey canvas.dotmodel,.story-mirror canvas.dotmodel{max-width:380px}
 @media (max-width:860px){.story-row{padding:12px 0}}
+.byline{align-items:center}
+.avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0}

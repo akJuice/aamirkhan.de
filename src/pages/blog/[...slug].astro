@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import avatar from '../../assets/avatar.jpg';
 export async function getStaticPaths() {
   const posts = await getCollection('blog', p => !p.data.draft && !p.data.externalUrl);
   return posts.map(post => ({ params: { slug: post.id }, props: { post } }));
@@ -11,7 +13,7 @@ const { Content } = await render(post);
 <Base title={post.data.title} description={post.data.description}>
 <article class="post">
 <h1>{post.data.title}</h1>
-<p class="byline"><span>Aamir Khan</span><span class="muted">Updated <time datetime={(post.data.updated ?? post.data.date).toISOString()}>{(post.data.updated ?? post.data.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</time></span></p>
+<p class="byline"><Image src={avatar} alt="" width={96} height={96} class="avatar" /><span>Aamir Khan</span><span class="muted">Updated <time datetime={(post.data.updated ?? post.data.date).toISOString()}>{(post.data.updated ?? post.data.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</time></span></p>
 <Content />
 </article>
 <p class="post-back"><a href="/blog"><span class="back-arrow" aria-hidden="true">←</span> All posts</a></p>
