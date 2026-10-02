@@ -135,3 +135,30 @@ a.quiet-link:hover,a.quiet-link:focus-visible{color:var(--text)}
 @media (max-width:860px){.story-row{padding:12px 0}}
 .byline{align-items:center}
 .avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0}
+/* ---------- Mobile polish ---------- */
+@media (max-width:640px){
+  header.site{flex-direction:column;align-items:flex-start;gap:14px;padding:22px 0 36px}
+  header.site .name{font-size:1.1rem}
+  nav{width:100%;justify-content:space-between;gap:10px}
+  nav a{font-size:.95rem}
+  .hero{gap:28px;min-height:0}
+  .hero h1,.story-intro h1{font-size:2.3rem}
+  .greet{min-height:2.6em}
+  .hero .lead{font-size:1.1rem}
+  .portrait,.about-photo{width:min(100%,280px)}
+  .story-intro{gap:24px;margin-bottom:8px}
+  .story-row{padding:20px 0}
+  canvas.dotmodel{max-width:300px}
+  .story-journey canvas.dotmodel,.story-mirror canvas.dotmodel{max-width:300px}
+  ul.list li{flex-direction:column;align-items:flex-start;gap:6px}
+  .meta{gap:10px}
+  .tabs{margin:4px 0 16px}
+  .tabs button{padding:6px 12px}
+  .post h1{font-size:2rem;line-height:1.2}
+  .byline{margin-bottom:28px}
+  .avatar{width:48px;height:48px}
+  footer{flex-direction:column;align-items:flex-start;gap:14px;margin-top:64px}
+  a.tck{margin:0 -13px}
+  main p,main ul,main ol{max-width:100%}
+}
+@media (max-width:360px){nav a{font-size:.88rem}nav{gap:6px}}
