@@ -1,11 +1,11 @@
 ---
 const places = [
-  { name: 'Bangalore', note: 'Born', loc: [12.97, 77.59] },
-  { name: 'Bursa', note: '10 years · Childhood', loc: [40.19, 29.06] },
-  { name: 'Istanbul', note: '1 year · High school', loc: [41.01, 28.98] },
-  { name: 'Cologne', note: 'Arrived in Germany, 2016', loc: [50.94, 6.96] },
-  { name: 'Aachen', note: 'University', loc: [50.78, 6.08] },
-  { name: 'Leonberg', note: 'Home today', loc: [48.80, 9.01] },
+  { name: 'Bangalore', note: 'Born', loc: [12.97, 77.59], color: '#f97316' },
+  { name: 'Bursa', note: '10 years · Childhood', loc: [40.19, 29.06], color: '#e11d48' },
+  { name: 'Istanbul', note: '1 year · High school', loc: [41.01, 28.98], color: '#9333ea' },
+  { name: 'Cologne', note: 'Arrived in Germany, 2016', loc: [50.94, 6.96], color: '#16a34a' },
+  { name: 'Aachen', note: 'University', loc: [50.78, 6.08], color: '#ca8a04' },
+  { name: 'Leonberg', note: 'Home today', loc: [48.80, 9.01], color: '#2563eb' },
 ];
 // Journey in order (indexes into places)
 const route = [0, 1, 2, 3, 5, 4, 5];
@@ -14,7 +14,7 @@ const route = [0, 1, 2, 3, 5, 4, 5];
   <canvas id="globe" aria-label="3D globe marking where Aamir has lived: Bangalore, Bursa, Istanbul, Cologne, Aachen and Leonberg" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
   <figcaption>
     <ol class="places">
-      {places.map((p) => <li><span class="dot"></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
+      {places.map((p) => <li><span class="dot" style={`background:${p.color}`}></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
     </ol>
   </figcaption>
 </figure>
@@ -22,13 +22,15 @@ const route = [0, 1, 2, 3, 5, 4, 5];
 <script>
   import createGlobe from 'cobe';
   const canvas = document.getElementById('globe') as HTMLCanvasElement;
-  const places = JSON.parse(canvas.dataset.places!) as { loc: [number, number] }[];
+  const places = JSON.parse(canvas.dataset.places!) as { loc: [number, number]; color: string }[];
+  const rgb = (h: string) => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16) / 255) as [number, number, number];
   const route = JSON.parse(canvas.dataset.route!) as number[];
   const isDark = () => {
     const t = document.documentElement.dataset.theme;
     return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   };
   const accent = () => (isDark() ? [0.38, 0.65, 0.98] : [0.15, 0.39, 0.92]) as [number, number, number];
+  const arcCol = () => (isDark() ? [0.6, 0.6, 0.6] : [0.45, 0.45, 0.45]) as [number, number, number];
   const colors = () => isDark()
     ? { dark: 1, baseColor: [0.3, 0.3, 0.3] as [number,number,number], glowColor: [0.15, 0.15, 0.15] as [number,number,number], mapBrightness: 6 }
     : { dark: 0, baseColor: [1, 1, 1] as [number,number,number], glowColor: [0.92, 0.92, 0.9] as [number,number,number], mapBrightness: 2 };
@@ -42,8 +44,8 @@ const route = [0, 1, 2, 3, 5, 4, 5];
   const globe = createGlobe(canvas, {
     devicePixelRatio: dpr, width: size * dpr, height: size * dpr,
     phi, theta, diffuse: 1.2, mapSamples: 16000, mapBaseBrightness: 0,
-    ...colors(), markerColor: accent(), arcColor: accent(),
-    markers: places.map((p) => ({ location: p.loc, size: 0.045 })),
+    ...colors(), markerColor: accent(), arcColor: arcCol(),
+    markers: places.map((p) => ({ location: p.loc, size: 0.05, color: rgb(p.color) })),
     arcs: route.slice(1).map((to, i) => ({ from: places[route[i]].loc, to: places[to].loc })),
     arcWidth: 0.6, arcHeight: 0.25, markerElevation: 0.02,
   });
@@ -67,7 +69,7 @@ const route = [0, 1, 2, 3, 5, 4, 5];
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);
 
-  const refresh = () => globe.update({ ...colors(), markerColor: accent(), arcColor: accent() });
+  const refresh = () => globe.update({ ...colors(), arcColor: arcCol() });
   new MutationObserver(refresh).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refresh);
   window.addEventListener('resize', () => { size = canvas.offsetWidth; globe.update({ width: size * dpr, height: size * dpr }); });
