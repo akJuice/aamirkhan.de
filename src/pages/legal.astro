@@ -1,10 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 ---
 <Base title="Legal" description="Impressum und Datenschutzerklärung von aamirkhan.de">
 <article class="legal">
-<h1>Legal</h1>
-<p><a href="#impressum">Impressum</a> · <a href="#datenschutz">Datenschutzerklärung</a></p>
+<PageHeader title="Legal"><p class="jump"><a href="#impressum">Impressum</a><a href="#datenschutz">Datenschutzerklärung</a></p></PageHeader>
 <h2 id="impressum">Impressum</h2>
 <p>Angaben gemäß § 5 DDG</p>
 <p>Aamir Khan<br/>Alte Ramtelstr. 11<br/>71229 Leonberg<br/>Deutschland</p>

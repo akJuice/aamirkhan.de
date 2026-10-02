@@ -2,7 +2,7 @@
 // One engine for every dotted 3D object on the site (globe, cap, laptop, sports),
 // so they all share the same look: grey dot-matrix shapes, blue accents, soft depth fade.
 interface Props {
-  model: 'globe' | 'cap' | 'laptop' | 'sports';
+  model: 'globe' | 'cap' | 'laptop' | 'sports' | 'plane';
   label: string;
   data?: unknown; // extra data, e.g. land points + places for the globe
 }
@@ -191,12 +191,36 @@ const { model, label, data } = Astro.props;
     return { parts: [{ obj: ballG, spin: 1 }, { obj: dbG, spin: -0.8 }], tilt: 0.2, y: 0, startY: 0 };
   }
 
+
+  function tri(out: Arr, a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, step = S) {
+    const ab = b.clone().sub(a), ac = c.clone().sub(a);
+    const n = Math.ceil(Math.max(ab.length(), ac.length()) / step);
+    for (let i = 0; i <= n; i++) for (let j = 0; j <= n - i; j++) {
+      const p = a.clone().add(ab.clone().multiplyScalar(i / n)).add(ac.clone().multiplyScalar(j / n));
+      out.push(p.x, p.y, p.z);
+    }
+  }
+  function buildPlane(): Built {
+    const body: Arr = [], accent: Arr = [];
+    const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
+    const nose = V(1.25, 0.05, 0), tail = V(-1.05, 0.05, 0), keel = V(-0.95, -0.32, 0);
+    tri(body, nose, tail, V(-1.1, 0.12, 0.85));   // right wing
+    tri(body, nose, tail, V(-1.1, 0.12, -0.85));  // left wing
+    tri(body, nose, tail, keel, S * 1.1);         // keel
+    for (let t = 0; t <= 1; t += 0.02) { const p = nose.clone().lerp(tail, t); accent.push(p.x, p.y + 0.01, p.z); } // centre fold
+    // dotted flight trail behind the plane
+    for (let t = 0; t <= 1; t += 0.035) accent.push(-1.25 - t * 1.1, 0.05 - Math.sin(t * Math.PI) * 0.35 - t * 0.2, Math.sin(t * Math.PI * 1.5) * 0.25);
+    const g = new THREE.Group(); g.add(points(body, 0.028, 'body'), points(accent, 0.034, 'accent'));
+    g.rotation.z = 0.12;
+    return { parts: [{ obj: g, spin: 1 }], tilt: 0.35, y: 0.05, startY: -0.6, noFog: true };
+  }
+
   // ---------- render each canvas ----------
   document.querySelectorAll<HTMLCanvasElement>('canvas.dotmodel').forEach((canvas) => {
     const model = canvas.dataset.model;
     const extra = canvas.dataset.extra ? JSON.parse(canvas.dataset.extra) : null;
     const start = mats.length;
-    const built = model === 'globe' ? buildGlobe(extra) : model === 'laptop' ? buildLaptop() : model === 'sports' ? buildSports() : buildCap();
+    const built = model === 'globe' ? buildGlobe(extra) : model === 'laptop' ? buildLaptop() : model === 'sports' ? buildSports() : model === 'plane' ? buildPlane() : buildCap();
     const myMats = mats.slice(start);
 
     const outer = new THREE.Group();

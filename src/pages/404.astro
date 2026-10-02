@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Globe from '../components/Globe.astro';
+import DotArrow from '../components/DotArrow.astro';
+---
+<Base title="Page not found" description="This page does not exist.">
+<section class="notfound split flip">
+<div class="split-text">
+<h1>Lost somewhere?</h1>
+<p class="lead">This page doesn't exist. As a third culture kid, I know the feeling of not being sure where you are.</p>
+<p><a class="arrow-link" href="/">Back to the homepage<DotArrow /></a></p>
+</div>
+<div class="split-media"><Globe /></div>
+</section>
+</Base>

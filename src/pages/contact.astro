@@ -1,12 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
 import Social from '../components/Social.astro';
+import DotModel from '../components/DotModel.astro';
 ---
-<Base title="Contact">
+<Base title="Contact" description="Get in touch with Aamir Khan.">
+<section class="contact split">
+<div class="split-text">
 <h1>Contact</h1>
-<p class="lead">Reach me by email or on social media. I'm happy to talk about AI products, project delivery, or anything you read here.</p>
-<ul class="list">
-<li><a href="mailto:aamirkhan760109@gmail.com">Email</a><span class="muted">aamirkhan760109@gmail.com</span></li>
-</ul>
-<div style="margin-top:28px"><Social size={26} /></div>
+<p class="lead">Happy to talk about AI products, project delivery, life between cultures, or anything you read here.</p>
+<p><a href="mailto:aamirkhan760109@gmail.com">aamirkhan760109@gmail.com</a></p>
+<Social size={24} />
+</div>
+<div class="split-media"><DotModel model="plane" label="Rotating 3D paper plane" /></div>
+</section>
 </Base>

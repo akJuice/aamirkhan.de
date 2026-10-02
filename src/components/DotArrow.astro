@@ -1,0 +1,11 @@
+---
+// Arrow drawn from dots, in the same dotted style as the 3D objects
+interface Props { dir?: 'right' | 'left' }
+const { dir = 'right' } = Astro.props;
+const dots = [[2,8],[5,8],[8,8],[11,8],[14,8],[11,5],[11,11],[8,2],[8,14]];
+---
+<svg class:list={['dot-arrow', dir === 'left' && 'left']} width="0.95em" height="0.95em" viewBox="0 0 16 16" aria-hidden="true" style={dir === 'left' ? 'transform-origin:center' : undefined}>
+  <g fill="currentColor" transform={dir === 'left' ? 'rotate(180 8 8)' : undefined}>
+    {dots.map(([x, y]) => <circle cx={x} cy={y} r="1.35" />)}
+  </g>
+</svg>
