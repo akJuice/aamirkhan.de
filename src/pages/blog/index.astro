@@ -1,33 +1,39 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-const all = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
-const groups = [
-  { key: 'professional', title: 'Professional', empty: 'Coming soon.' },
-  { key: 'personal', title: 'Personal', empty: 'Coming soon.' },
-];
+const posts = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
+const label = { professional: 'Professional', personal: 'Personal' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 ---
 <Base title="Blog" description="Professional and personal writing by Aamir Khan.">
 <h1>Blog</h1>
-{groups.map(g => {
-  const posts = all.filter(p => p.data.category === g.key);
-  return (
-    <section>
-      <h2>{g.title}</h2>
-      {posts.length === 0 ? <p class="muted">{g.empty}</p> :
-      <ul class="list">
-        {posts.map(p => (
-          <li>
-            <span>
-              <a href={p.data.externalUrl ?? `/blog/${p.id}/`} {...(p.data.externalUrl ? { target: '_blank', rel: 'noopener' } : {})}>{p.data.title}{p.data.externalUrl && ' ↗'}</a>
-              {p.data.publisher && <span class="muted"> · on {p.data.publisher}</span>}
-            </span>
-            <time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
-          </li>
-        ))}
-      </ul>}
-    </section>
-  );
-})}
+<div class="tabs" role="tablist" aria-label="Filter posts">
+  <button role="tab" aria-selected="true" data-filter="all">All</button>
+  <button role="tab" aria-selected="false" data-filter="professional">Professional</button>
+  <button role="tab" aria-selected="false" data-filter="personal">Personal</button>
+</div>
+<ul class="list posts">
+{posts.map(p => (
+  <li data-cat={p.data.category}>
+    <span>
+      <a href={p.data.externalUrl ?? `/blog/${p.id}/`} {...(p.data.externalUrl ? { target: '_blank', rel: 'noopener' } : {})}>{p.data.title}{p.data.externalUrl && ' ↗'}</a>
+      {p.data.publisher && <span class="muted"> · on {p.data.publisher}</span>}
+    </span>
+    <span class="meta"><span class="tag">{label[p.data.category]}</span><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time></span>
+  </li>
+))}
+</ul>
+<p class="muted empty" hidden>Nothing here yet.</p>
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('.tabs button')];
+  const items = [...document.querySelectorAll<HTMLLIElement>('.posts li')];
+  const empty = document.querySelector<HTMLElement>('.empty')!;
+  tabs.forEach(t => t.addEventListener('click', () => {
+    const f = t.dataset.filter!;
+    tabs.forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    let shown = 0;
+    items.forEach(li => { const on = f === 'all' || li.dataset.cat === f; li.hidden = !on; if (on) shown++; });
+    empty.hidden = shown > 0;
+  }));
+</script>
 </Base>
