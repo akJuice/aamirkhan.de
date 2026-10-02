@@ -16,7 +16,7 @@ const { model, label, data } = Astro.props;
   import * as THREE from 'three';
 
   type Arr = number[];
-  type Built = { parts: { obj: THREE.Object3D; spin: number }[]; tilt: number; y: number; startY: number };
+  type Built = { parts: { obj: THREE.Object3D; spin: number }[]; tilt: number; y: number; startY: number; noFog?: boolean };
 
   const isDark = () => {
     const t = document.documentElement.dataset.theme;
@@ -61,13 +61,10 @@ const { model, label, data } = Astro.props;
     sphere(ocean, R * 0.995, 900);
     const g = new THREE.Group();
     g.add(points(ocean, 0.016, 'faint'), points(land, 0.026, 'body'));
-    const places = extra.places as { loc: [number, number]; color: string }[];
-    places.forEach((p) => {
-      const c: Arr = []; const v = ll(p.loc[0], p.loc[1], R * 1.01);
-      c.push(v.x, v.y, v.z);
-      for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; const w = ll(p.loc[0] + Math.cos(a) * 2.2, p.loc[1] + Math.sin(a) * 2.8, R * 1.01); c.push(w.x, w.y, w.z); }
-      g.add(points(c, 0.05, 'color', p.color));
-    });
+    const hi: Arr = [];
+    for (let i = 0; i < extra.hi.length; i += 2) { const v = ll(extra.hi[i], extra.hi[i + 1], R * 1.003); hi.push(v.x, v.y, v.z); }
+    g.add(points(hi, 0.032, 'accent'));
+    const places = extra.places as { loc: [number, number] }[];
     for (let k = 1; k < places.length; k++) {
       const a = ll(places[k - 1].loc[0], places[k - 1].loc[1], R), b = ll(places[k].loc[0], places[k].loc[1], R);
       for (let t = 0; t <= 1; t += 0.02) {
@@ -126,7 +123,7 @@ const { model, label, data } = Astro.props;
       for (let x = -W + 0.2 + ind; x <= -W + 0.2 + ind + len; x += S * 0.8) { const p = at(x, h); accent.push(p.x, p.y, p.z); }
     });
     const g = new THREE.Group(); g.add(points(base, 0.028, 'body'), points(accent, 0.034, 'accent'));
-    return { parts: [{ obj: g, spin: 1 }], tilt: 0.32, y: -0.2, startY: -0.5 };
+    return { parts: [{ obj: g, spin: 1 }], tilt: 0.32, y: -0.2, startY: -0.5, noFog: true };
   }
 
   function buildSports(): Built {
@@ -184,7 +181,7 @@ const { model, label, data } = Astro.props;
 
     const theme = () => {
       const dark = isDark();
-      scene.fog = new THREE.Fog(new THREE.Color(getComputedStyle(document.body).backgroundColor), 5.0, 8.2);
+      scene.fog = built.noFog ? null : new THREE.Fog(new THREE.Color(getComputedStyle(document.body).backgroundColor), 5.0, 8.2);
       myMats.forEach(({ m, kind, color }) => {
         if (kind === 'body') { m.color = new THREE.Color(dark ? '#cfcfcf' : '#3a3a3a'); m.opacity = dark ? 0.85 : 0.75; }
         if (kind === 'faint') { m.color = new THREE.Color(dark ? '#cfcfcf' : '#3a3a3a'); m.opacity = dark ? 0.18 : 0.14; }
@@ -200,18 +197,34 @@ const { model, label, data } = Astro.props;
     resize(); window.addEventListener('resize', resize);
 
     let dragging = false, lastX = 0, lastY = 0;
-    canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; });
+    let active = built.parts; // which objects the current drag moves
+    const pick = (e: PointerEvent) => {
+      if (built.parts.length === 1) return built.parts;
+      const r = canvas.getBoundingClientRect();
+      const mx = ((e.clientX - r.left) / r.width) * 2 - 1, my = -(((e.clientY - r.top) / r.height) * 2 - 1);
+      let best = built.parts[0], bd = Infinity;
+      built.parts.forEach((p) => {
+        const v = new THREE.Vector3(); p.obj.getWorldPosition(v); v.project(camera);
+        const d = (v.x - mx) ** 2 + (v.y - my) ** 2;
+        if (d < bd) { bd = d; best = p; }
+      });
+      return [best];
+    };
+    canvas.addEventListener('pointerdown', (e) => { dragging = true; active = pick(e); lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; });
     canvas.addEventListener('pointermove', (e) => {
       if (!dragging) return;
-      built.parts.forEach((p) => (p.obj.rotation.y += (e.clientX - lastX) * 0.008));
-      outer.rotation.x = Math.max(-0.4, Math.min(1.1, outer.rotation.x + (e.clientY - lastY) * 0.006));
+      active.forEach((p) => {
+        p.obj.rotation.y += (e.clientX - lastX) * 0.008;
+        if (built.parts.length > 1) p.obj.rotation.x = Math.max(-1.2, Math.min(1.2, p.obj.rotation.x + (e.clientY - lastY) * 0.006));
+      });
+      if (built.parts.length === 1) outer.rotation.x = Math.max(-0.4, Math.min(1.1, outer.rotation.x + (e.clientY - lastY) * 0.006));
       lastX = e.clientX; lastY = e.clientY;
     });
     const end = () => { dragging = false; canvas.style.cursor = 'grab'; };
     canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
 
     const frame = () => {
-      if (!dragging && !reduce) built.parts.forEach((p) => (p.obj.rotation.y += 0.004 * p.spin));
+      if (!reduce) built.parts.forEach((p) => { if (!(dragging && active.includes(p))) p.obj.rotation.y += 0.004 * p.spin; });
       renderer.render(scene, camera);
       requestAnimationFrame(frame);
     };

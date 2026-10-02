@@ -14,39 +14,39 @@ import DotModel from '../components/DotModel.astro';
 <Image src={photo} alt="Aamir Khan sitting in a boat on a lake with mountains behind him" widths={[420,840]} sizes="(max-width: 860px) 100vw, 420px" class="about-photo" />
 </section>
 
-<section class="story-row story-journey">
+<section class="story-row story-mirror">
+<Globe />
 <div>
 <h2>My Journey</h2>
 <p>I was born in Bangalore, India, grew up in Turkey, and have been living in Germany since 2016.</p>
 <p>Moving between three countries made me a third culture kid. It shaped how I see the world, and along the way I picked up English, German, Turkish, Hindi and Urdu, plus a little Italian.</p>
 <p><a class="inline-arrow" href="/blog">I write about my journey and what it taught me on my blog <span class="arrow" aria-hidden="true">→</span></a></p>
 </div>
-<Globe />
 </section>
 
-<section class="story-row story-mirror">
-<DotModel model="cap" label="Rotating 3D graduation cap" />
+<section class="story-row story-journey">
 <div>
 <h2>Education</h2>
 <p>I started high school in Turkey and completed it in Cologne. After that, I completed my bachelor's degree in computer science at RWTH Aachen University.</p>
 </div>
+<DotModel model="cap" label="Rotating 3D graduation cap" />
 </section>
 
-<section class="story-row story-journey">
+<section class="story-row story-mirror">
+<DotModel model="laptop" label="Rotating 3D laptop" />
 <div>
 <h2>Work</h2>
 <p>Today I am a Technical Project Manager at <FeatherFlow />, a product agency that helps companies and ambitious founders around the world turn AI ideas into real products. I work at the intersection of clients and engineering: scoping products, keeping delivery on track, and making sure what we build solves the actual problem.</p>
 <p>I also spent a year at Bosch as an intern in Sales, Strategy and Business Excellence, and wrote my bachelor's thesis with Bosch.</p>
 </div>
-<DotModel model="laptop" label="Rotating 3D laptop" />
 </section>
 
-<section class="story-row story-mirror">
-<DotModel model="sports" label="Rotating 3D basketball and dumbbell" />
+<section class="story-row story-journey">
 <div>
 <h2>Outside of work</h2>
 <p>You will usually find me on a basketball court or in the gym. I also love going to events about personal development. Meeting people who want to grow is one of the best ways I know to keep learning.</p>
 <p class="muted" style="margin-top:32px">More of my story is coming soon. Want to talk? <a href="/contact">Get in touch</a>.</p>
 </div>
+<DotModel model="sports" label="Rotating 3D basketball and dumbbell" />
 </section>
 </Base>
