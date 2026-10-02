@@ -1,17 +1,14 @@
 ---
 const places = [
-  { name: 'Bangalore', note: 'Born', loc: [12.97, 77.59], color: '#f97316' },
-  { name: 'Bursa', note: '10 years · Childhood', loc: [40.19, 29.06], color: '#e11d48' },
-  { name: 'Istanbul', note: '1 year · High school', loc: [41.01, 28.98], color: '#9333ea' },
-  { name: 'Cologne', note: 'Arrived in Germany, 2016', loc: [50.94, 6.96], color: '#16a34a' },
-  { name: 'Aachen', note: 'University', loc: [50.78, 6.08], color: '#ca8a04' },
-  { name: 'Leonberg', note: 'Home today', loc: [48.80, 9.01], color: '#2563eb' },
+  { name: 'India', note: 'Born in Bangalore', loc: [20.6, 78.9], color: '#f97316' },
+  { name: 'Turkey', note: 'Childhood, 2005–2016', loc: [39.0, 35.2], color: '#e11d48' },
+  { name: 'Germany', note: 'Since 2016', loc: [51.1, 10.4], color: '#2563eb' },
 ];
 // Journey in order (indexes into places)
-const route = [0, 1, 2, 3, 5, 4, 5];
+const route = [0, 1, 2];
 ---
 <figure class="globe-wrap">
-  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: Bangalore, Bursa, Istanbul, Cologne, Aachen and Leonberg" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
+  <canvas id="globe" aria-label="3D globe marking where Aamir has lived: India, Turkey and Germany" data-places={JSON.stringify(places)} data-route={JSON.stringify(route)}></canvas>
   <figcaption>
     <ol class="places">
       {places.map((p) => <li><span class="dot" style={`background:${p.color}`}></span><strong>{p.name}</strong><span class="muted"> · {p.note}</span></li>)}
@@ -45,7 +42,7 @@ const route = [0, 1, 2, 3, 5, 4, 5];
     devicePixelRatio: dpr, width: size * dpr, height: size * dpr,
     phi, theta, diffuse: 1.2, mapSamples: 16000, mapBaseBrightness: 0,
     ...colors(), markerColor: accent(), arcColor: arcCol(),
-    markers: places.map((p) => ({ location: p.loc, size: 0.05, color: rgb(p.color) })),
+    markers: places.map((p) => ({ location: p.loc, size: 0.07, color: rgb(p.color) })),
     arcs: route.slice(1).map((to, i) => ({ from: places[route[i]].loc, to: places[to].loc })),
     arcWidth: 0.6, arcHeight: 0.25, markerElevation: 0.02,
   });
