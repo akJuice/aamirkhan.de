@@ -1,25 +1,71 @@
 ---
-// Small 3D dotted arrow: every dot is a shaded sphere with a soft offset "depth" layer behind it,
-// so it reads as the same dotted 3D material as the globe, cap and laptop. It does not rotate.
+// Small rotating dotted 3D cube, same dot-matrix style as the globe, cap and laptop.
+// (Kept the file name so every link that used the arrow now shows the cube.)
 interface Props { dir?: 'right' | 'left' }
 const { dir = 'right' } = Astro.props;
-const dots = [[2,8],[5,8],[8,8],[11,8],[14,8],[11,5],[11,11],[8,2],[8,14]];
-const id = `da${Math.random().toString(36).slice(2, 8)}`;
 ---
-<svg class:list={['dot-arrow', dir === 'left' && 'left']} width="1.05em" height="1.05em" viewBox="0 0 17 17" aria-hidden="true">
-  <defs>
-    <radialGradient id={id} cx="35%" cy="32%" r="70%">
-      <stop offset="0%" stop-color="currentColor" stop-opacity="0.55" />
-      <stop offset="55%" stop-color="currentColor" stop-opacity="1" />
-      <stop offset="100%" stop-color="currentColor" stop-opacity="1" />
-    </radialGradient>
-  </defs>
-  <g transform={dir === 'left' ? 'rotate(180 8.5 8.5)' : undefined}>
-    <g fill="currentColor" opacity="0.22" transform="translate(1 1)">
-      {dots.map(([x, y]) => <circle cx={x} cy={y} r="1.35" />)}
-    </g>
-    <g fill={`url(#${id})`}>
-      {dots.map(([x, y]) => <circle cx={x} cy={y} r="1.45" />)}
-    </g>
-  </g>
-</svg>
+<span class:list={['dot-cube', dir === 'left' && 'left']} aria-hidden="true"><canvas></canvas></span>
+
+<script>
+  import * as THREE from 'three';
+  const isDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // cube points: dense dotted edges, sparse dotted faces
+  const edge: number[] = [], face: number[] = [], h = 0.5;
+  const steps = 7;
+  for (const a of [-h, h]) for (const b of [-h, h])
+    for (let i = 0; i <= steps; i++) {
+      const t = -h + (i / steps) * 2 * h;
+      edge.push(t, a, b, a, t, b, a, b, t);
+    }
+  for (const s of [-h, h]) for (let i = 1; i < 4; i++) for (let j = 1; j < 4; j++) {
+    const u = -h + (i / 4) * 2 * h, v = -h + (j / 4) * 2 * h;
+    face.push(s, u, v, u, s, v, u, v, s);
+  }
+
+  document.querySelectorAll<HTMLElement>('.dot-cube').forEach((wrap) => {
+    const canvas = wrap.querySelector('canvas')!;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    const px = Math.min(window.devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(px);
+    const size = () => Math.round(wrap.getBoundingClientRect().width) || 18;
+    renderer.setSize(size(), size(), false);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 20); camera.position.z = 3.4;
+    const mk = (arr: number[], sz: number) => {
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
+      return new THREE.Points(g, new THREE.PointsMaterial({ size: sz, transparent: true, depthWrite: false }));
+    };
+    const edges = mk(edge, 0.11), faces = mk(face, 0.08);
+    const cube = new THREE.Group(); cube.add(edges, faces); cube.rotation.set(0.55, 0.6, 0);
+    scene.add(cube);
+    const theme = () => {
+      const link = wrap.closest('a');
+      const col = new THREE.Color(getComputedStyle(link ?? wrap).color);
+      (edges.material as THREE.PointsMaterial).color = col; (edges.material as THREE.PointsMaterial).opacity = 1;
+      (faces.material as THREE.PointsMaterial).color = col; (faces.material as THREE.PointsMaterial).opacity = isDark() ? 0.45 : 0.35;
+    };
+    theme();
+    let fast = false;
+    const link = wrap.closest('a');
+    link?.addEventListener('mouseenter', () => { fast = true; requestAnimationFrame(theme); setTimeout(theme, 220); });
+    link?.addEventListener('mouseleave', () => { fast = false; setTimeout(theme, 220); });
+    new MutationObserver(() => setTimeout(theme, 50)).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    const loop = () => {
+      if (!reduce) { cube.rotation.y += fast ? 0.05 : 0.012; cube.rotation.x += fast ? 0.02 : 0.004; }
+      renderer.render(scene, camera);
+      requestAnimationFrame(loop);
+    };
+    loop();
+  });
+</script>
+
+<style>
+  .dot-cube { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.18em; margin-left: .4em; }
+  .dot-cube.left { margin: 0 .4em 0 0; }
+  .dot-cube canvas { width: 100%; height: 100%; display: block; }
+</style>
