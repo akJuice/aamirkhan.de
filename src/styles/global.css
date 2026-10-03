@@ -234,3 +234,4 @@ ul.social a[title="RSS feed"]:hover{color:#F26522}
 .blog-head > .split-media{justify-self:end;width:260px;max-width:260px}
 @media (max-width:860px){.blog-head{grid-template-columns:1fr}.blog-head > .split-media{justify-self:start;width:200px}}
 .contact .lead{color:var(--text)}
+.contact ul.social a{color:var(--text)}
