@@ -2,7 +2,7 @@
 // One engine for every dotted 3D object on the site (globe, cap, laptop, sports),
 // so they all share the same look: grey dot-matrix shapes, blue accents, soft depth fade.
 interface Props {
-  model: 'globe' | 'cap' | 'laptop' | 'sports' | 'plane';
+  model: 'globe' | 'cap' | 'laptop' | 'sports' | 'plane' | 'book';
   label: string;
   data?: unknown; // extra data, e.g. land points + places for the globe
 }
@@ -232,12 +232,38 @@ const { model, label, data } = Astro.props;
     return { parts: [{ obj: g, spin: 1 }], tilt: 0.42, y: 0.05, startY: -0.7, noFog: true };
   }
 
+
+  function buildBook(): Built {
+    // Open book: two curved pages on a flat cover, dotted text lines in blue
+    const body: Arr = [], accent: Arr = [];
+    const W = 1.15, D = 0.8;
+    const pageY = (ax: number) => 0.32 * Math.sin((Math.PI / 2) * Math.min(1, ax / (W * 0.35))) - 0.08 * (ax / W) ** 2;
+    for (const side of [-1, 1]) {
+      // page surface on an even grid
+      for (let x = 0; x <= W + 1e-6; x += S) for (let z = -D; z <= D + 1e-6; z += S) body.push(side * x, pageY(x), z);
+      // page stack edge (a few layers at the outer edge)
+      for (let k = 0; k < 4; k++) for (let z = -D; z <= D + 1e-6; z += S * 0.7) body.push(side * W, pageY(W) - k * 0.05, z);
+      // cover underneath, slightly larger, flat
+      for (let x = 0; x <= W + 0.08; x += S * 1.4) { body.push(side * x, -0.12, -D - 0.06, side * x, -0.12, D + 0.06); }
+      for (let z = -D - 0.06; z <= D + 0.06; z += S * 1.4) body.push(side * (W + 0.08), -0.12, z);
+      // text lines
+      for (let i = 0; i < 7; i++) {
+        const z = -D + 0.18 + i * 0.2, len = i === 6 ? 0.45 : 0.75 - (i % 3) * 0.1;
+        for (let x = 0.2; x <= 0.2 + len; x += S * 0.8) accent.push(side * x, pageY(x) + 0.012, z);
+      }
+    }
+    // spine
+    for (let z = -D; z <= D + 1e-6; z += S * 0.5) body.push(0, -0.04, z);
+    const g = new THREE.Group(); g.add(points(body, 0.026, 'body'), points(accent, 0.032, 'accent'));
+    return { parts: [{ obj: g, spin: 1 }], tilt: 0.75, y: -0.1, startY: 0.4, noFog: true };
+  }
+
   // ---------- render each canvas ----------
   document.querySelectorAll<HTMLCanvasElement>('canvas.dotmodel').forEach((canvas) => {
     const model = canvas.dataset.model;
     const extra = canvas.dataset.extra ? JSON.parse(canvas.dataset.extra) : null;
     const start = mats.length;
-    const built = model === 'globe' ? buildGlobe(extra) : model === 'laptop' ? buildLaptop() : model === 'sports' ? buildSports() : model === 'plane' ? buildPlane() : buildCap();
+    const built = model === 'globe' ? buildGlobe(extra) : model === 'laptop' ? buildLaptop() : model === 'sports' ? buildSports() : model === 'plane' ? buildPlane() : model === 'book' ? buildBook() : buildCap();
     const myMats = mats.slice(start);
 
     const outer = new THREE.Group();

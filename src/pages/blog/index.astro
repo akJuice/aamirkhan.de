@@ -1,13 +1,16 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
-import PageHeader from '../../components/PageHeader.astro';
+import DotModel from '../../components/DotModel.astro';
 const posts = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
 const label = { professional: 'Professional', personal: 'Personal' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 ---
 <Base title="Blog" description="Professional and personal writing by Aamir Khan.">
-<PageHeader title="Blog" />
+<section class="blog-head split">
+<div class="split-text"><h1>Blog</h1></div>
+<div class="split-media"><DotModel model="book" label="Rotating 3D open book" /></div>
+</section>
 <div class="tabs" role="tablist" aria-label="Filter posts">
   <button role="tab" aria-selected="true" data-filter="all">All</button>
   <button role="tab" aria-selected="false" data-filter="professional">Professional</button>

@@ -229,3 +229,7 @@ ul.social a[title="RSS feed"]:hover{color:#F26522}
   .chip{margin:0 -14px}
 }
 @media (max-width:360px){nav a{font-size:.85rem}}
+/* Blog header with book */
+.blog-head{margin-bottom:var(--s4)}
+.blog-head .split-media{max-width:280px}
+@media (max-width:860px){.blog-head .split-media{max-width:220px;justify-self:start}}
