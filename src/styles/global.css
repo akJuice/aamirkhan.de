@@ -164,7 +164,8 @@ ul.social a[title="RSS feed"]:hover{color:#F26522}
 .hero{min-height:min(68vh,620px)}
 .hero .split-text{max-width:56ch}
 .hero h1{margin-bottom:var(--s3)}
-.hero .lead{margin:0 0 var(--s2);color:var(--text)}
+.hero .lead{margin:0 0 var(--s2);color:var(--text);font-weight:600}
+.hero .lead a{font-weight:600}
 
 /* About */
 .about-head{margin-bottom:var(--s5)}
