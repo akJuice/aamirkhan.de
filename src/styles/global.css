@@ -233,3 +233,8 @@ ul.social a[title="RSS feed"]:hover{color:#F26522}
 .blog-head{margin-bottom:var(--s4)}
 .blog-head .split-media{max-width:280px}
 @media (max-width:860px){.blog-head .split-media{max-width:220px;justify-self:start}}
+/* Blog header shares the list's width; book lines up with the tags & dates column */
+.blog-head{max-width:820px;grid-template-columns:1fr auto}
+.blog-head > .split-text{justify-self:start;max-width:none}
+.blog-head > .split-media{justify-self:end;width:260px;max-width:260px}
+@media (max-width:860px){.blog-head{grid-template-columns:1fr}.blog-head > .split-media{justify-self:start;width:200px}}
