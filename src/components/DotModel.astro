@@ -234,29 +234,38 @@ const { model, label, data } = Astro.props;
 
 
   function buildBook(): Built {
-    // Open book standing upright, pages facing you, spine vertical. Denser dots everywhere.
+    // A real hardcover book held open in the air: two halves opened in a V around a vertical spine,
+    // each with a thick page block, a cover board behind it and a rounded spine. Same dotted look.
     const body: Arr = [], accent: Arr = [];
-    const W = 1.05, D = 0.95, d = S * 0.8;
-    // build lying flat (x across, y up out of the page, z along spine) then stand it up: (x, y, z) -> (x, -z, y)
-    const put = (out: Arr, x: number, y: number, z: number) => out.push(x, -z, y);
-    const pageY = (ax: number) => 0.3 * Math.sin((Math.PI / 2) * Math.min(1, ax / (W * 0.35))) - 0.08 * (ax / W) ** 2;
+    const W = 0.95, H = 1.15, T = 0.2, open = 0.42, d = S * 0.8;
+    const P = (out: Arr, v: THREE.Vector3) => out.push(v.x, v.y, v.z);
     for (const side of [-1, 1]) {
-      for (let x = 0; x <= W + 1e-6; x += d) for (let z = -D; z <= D + 1e-6; z += d) put(body, side * x, pageY(x), z);
-      // page stack at the outer edge
-      for (let k = 0; k < 5; k++) for (let z = -D; z <= D + 1e-6; z += d * 0.8) put(body, side * W, pageY(W) - k * 0.04, z);
-      // page stack along top and bottom edges
-      for (let k = 0; k < 4; k++) for (let x = 0; x <= W + 1e-6; x += d * 0.8) { put(body, side * x, pageY(x) - k * 0.04, -D); put(body, side * x, pageY(x) - k * 0.04, D); }
-      // full cover behind the pages
-      for (let x = 0; x <= W + 0.08; x += d) for (let z = -D - 0.06; z <= D + 0.06 + 1e-6; z += d) put(body, side * x, -0.16, z);
-      // text lines
-      for (let i = 0; i < 8; i++) {
-        const z = -D + 0.2 + i * 0.21, len = i === 7 ? 0.4 : 0.72 - (i % 3) * 0.1;
-        for (let x = 0.18; x <= 0.18 + len; x += d * 0.9) put(accent, side * x, pageY(x) + 0.014, z);
+      const u = new THREE.Vector3(side * Math.cos(open), 0, Math.sin(open));      // along the page, away from spine
+      const n = new THREE.Vector3(-side * Math.sin(open), 0, Math.cos(open));     // page surface normal (towards you)
+      const bulge = (t: number) => 0.12 * Math.sin(Math.PI * Math.min(1, t / W) * 0.5) * (1 - t / W) + 0.03;
+      const at = (t: number, y: number, depth: number) => u.clone().multiplyScalar(t).add(n.clone().multiplyScalar(depth)).add(new THREE.Vector3(0, y, 0));
+      // front page surface, slightly curved
+      for (let t = 0; t <= W + 1e-6; t += d) for (let y = -H; y <= H + 1e-6; y += d) P(body, at(t, y, bulge(t)));
+      // page block thickness: outer edge, top and bottom edges
+      for (let k = 0; k <= T + 1e-6; k += d * 0.7) {
+        for (let y = -H; y <= H + 1e-6; y += d) P(body, at(W, y, bulge(W) - k));
+        for (let t = 0; t <= W + 1e-6; t += d) { P(body, at(t, H, bulge(t) - k)); P(body, at(t, -H, bulge(t) - k)); }
+      }
+      // cover board behind the pages, a little larger
+      for (let t = 0; t <= W + 0.08 + 1e-6; t += d) for (let y = -H - 0.07; y <= H + 0.07 + 1e-6; y += d) P(body, at(t, y, -T - 0.05));
+      // cover edge thickness
+      for (let y = -H - 0.07; y <= H + 0.07 + 1e-6; y += d * 0.8) P(body, at(W + 0.08, y, -T - 0.02));
+      // text lines on the page in blue
+      for (let i = 0; i < 9; i++) {
+        const y = H - 0.28 - i * 0.24, len = i === 8 ? 0.35 : 0.62 - (i % 3) * 0.08;
+        for (let t = 0.16; t <= 0.16 + len; t += d * 0.9) P(accent, at(t, y, bulge(t) + 0.014));
       }
     }
-    for (let z = -D; z <= D + 1e-6; z += d * 0.5) put(body, 0, -0.04, z); // spine
-    const g = new THREE.Group(); g.add(points(body, 0.028, 'body'), points(accent, 0.034, 'accent'));
-    return { parts: [{ obj: g, spin: 1 }], tilt: 0.12, y: 0, startY: 0.5, noFog: true };
+    // rounded spine behind the fold
+    for (let y = -H - 0.07; y <= H + 0.07 + 1e-6; y += d * 0.8)
+      for (let a = -1.2; a <= 1.2; a += 0.25) P(body, new THREE.Vector3(Math.sin(a) * 0.12, y, -T - 0.05 - Math.cos(a) * 0.08));
+    const g = new THREE.Group(); g.add(points(body, 0.026, 'body'), points(accent, 0.032, 'accent'));
+    return { parts: [{ obj: g, spin: 1 }], tilt: 0.18, y: 0, startY: 0.35, noFog: true };
   }
 
   // ---------- render each canvas ----------
