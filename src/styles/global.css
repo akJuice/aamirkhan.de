@@ -121,9 +121,9 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 .chip:hover,.chip:focus-visible{background:var(--accent-soft);box-shadow:0 2px 12px color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
 .chip:hover 
 /* FeatherFlow chip keeps FeatherFlow's own purple on hover */
-.ff-chip{display:inline-flex;align-items:center;vertical-align:middle;padding:6px 13px;margin:0 2px;border-radius:var(--r-full);position:relative;top:-2px;transition:background .25s,box-shadow .25s}
+.ff-chip{display:inline-flex;align-items:center;vertical-align:-0.18em;line-height:1;white-space:nowrap;padding:4px 10px;margin:-4px 0;border-radius:var(--r-full);transition:background .25s,box-shadow .25s}
 .ff-chip:hover,.ff-chip:focus-visible{background:color-mix(in srgb,var(--ff-purple) 8%,transparent);box-shadow:0 2px 12px rgba(97,96,255,.12)}
-.ff-chip img{height:15px;width:auto}
+.ff-chip img{display:inline-block;height:1.05em;width:auto;max-width:none}
 .ff-dark{display:none!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ff-light{display:none!important}:root:not([data-theme="light"]) .ff-dark{display:block!important}}
 :root[data-theme="dark"] .ff-light{display:none!important}
@@ -159,8 +159,9 @@ ul.social a[title="RSS feed"]:hover{color:#F26522}
 .hero{min-height:min(68vh,620px)}
 .hero .split-text{max-width:56ch}
 .hero h1{margin-bottom:var(--s3)}
-.hero .lead{margin:0 0 var(--s2);color:var(--text);font-weight:600}
-.hero .lead a{font-weight:600}
+.hero .lead{margin:0 0 var(--s2);color:var(--text);font-weight:500}
+.hero .lead a{font-weight:500}
+.nowrap{white-space:nowrap}
 
 /* About */
 .about-head{margin-bottom:var(--s5)}
