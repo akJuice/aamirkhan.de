@@ -246,3 +246,12 @@ button.theme .i-sun{display:none}
 button.theme:hover,button.theme:focus-visible{background:none;color:var(--text)}
 /* A little breathing room before the FeatherFlow logo */
 .ff-chip{margin-left:.3em}
+/* Homepage hero: give the text more room so every line fits, smaller photo, tidy alignment */
+.hero.split{grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr)}
+.hero .split-text{justify-self:start;max-width:none}
+.hero .split-media{max-width:340px;justify-self:end}
+.hero h1{font-size:clamp(2.6rem,4.6vw,3.6rem)}
+.hero .lead{font-size:1.2rem;white-space:nowrap}
+.hero .ff-chip img{height:.95em}
+@media (max-width:860px){.hero.split{grid-template-columns:1fr}.hero .split-media{justify-self:start;max-width:300px}}
+@media (max-width:520px){.hero .lead{white-space:normal}}
