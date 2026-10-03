@@ -236,3 +236,9 @@ ul.social a[title="RSS feed"]:hover{color:#F26522}
 @media (max-width:860px){.blog-head{grid-template-columns:1fr}.blog-head > .split-media{justify-self:start;width:200px}}
 .contact .lead{color:var(--text)}
 .contact ul.social a{color:var(--text)}
+/* Theme toggle: moon in light mode, sun in dark mode */
+button.theme{display:inline-flex}
+button.theme .i-sun{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.theme .i-sun{display:block}:root:not([data-theme="light"]) button.theme .i-moon{display:none}}
+:root[data-theme="dark"] button.theme .i-sun{display:block}
+:root[data-theme="dark"] button.theme .i-moon{display:none}

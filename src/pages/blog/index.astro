@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import DotModel from '../../components/DotModel.astro';
+import ExternalArrow from '../../components/ExternalArrow.astro';
 const posts = (await getCollection('blog', p => !p.data.draft)).sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
 const label = { professional: 'Professional', personal: 'Personal' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
@@ -20,7 +21,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'shor
 {posts.map(p => (
   <li data-cat={p.data.category}>
     <span>
-      <a class="title" href={p.data.externalUrl ?? `/blog/${p.id}/`} {...(p.data.externalUrl ? { target: '_blank', rel: 'noopener' } : {})}>{p.data.title}{p.data.externalUrl && ' ↗'}</a>
+      <a class="title" href={p.data.externalUrl ?? `/blog/${p.id}/`} {...(p.data.externalUrl ? { target: '_blank', rel: 'noopener' } : {})}>{p.data.title}{p.data.externalUrl && <ExternalArrow />}</a>
       {p.data.publisher && <span class="muted"> · on {p.data.publisher}</span>}
     </span>
     <span class="meta"><span class="tag">{label[p.data.category]}</span><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time></span>
