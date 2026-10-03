@@ -116,15 +116,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 .arrow-link:hover,.arrow-link:focus-visible{color:var(--accent)}
 .arrow-link.quiet{color:var(--muted)}
 .arrow-link.quiet:hover,.arrow-link.quiet:focus-visible{color:var(--accent)}
-.dot-arrow{display:inline-block;vertical-align:-0.08em;margin-left:.35em;transition:transform .25s var(--ease)}
-.dot-arrow.left{margin:0 .35em 0 0}
-.arrow-link:hover .dot-arrow:not(.left),.arrow-link:focus-visible .dot-arrow:not(.left){transform:translateX(5px)}
-.arrow-link:hover .dot-arrow.left,.arrow-link:focus-visible .dot-arrow.left{transform:translateX(-5px)}
-
+.arrow-link:hover .arrow-link:hover 
 .chip{display:inline-flex;align-items:center;gap:var(--s1);padding:6px 14px;margin:0 -14px;border-radius:var(--r-full);color:var(--text);transition:background .25s,box-shadow .25s,color .25s}
 .chip:hover,.chip:focus-visible{background:var(--accent-soft);box-shadow:0 2px 12px color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
-.chip:hover .dot-arrow{transform:translateX(5px)}
-
+.chip:hover 
 /* FeatherFlow chip keeps FeatherFlow's own purple on hover */
 .ff-chip{display:inline-flex;align-items:center;vertical-align:middle;padding:6px 13px;margin:0 2px;border-radius:var(--r-full);position:relative;top:-2px;transition:background .25s,box-shadow .25s}
 .ff-chip:hover,.ff-chip:focus-visible{background:color-mix(in srgb,var(--ff-purple) 8%,transparent);box-shadow:0 2px 12px rgba(97,96,255,.12)}
