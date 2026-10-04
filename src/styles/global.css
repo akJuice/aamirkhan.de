@@ -332,3 +332,11 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
 .story .split-media canvas.dotmodel{margin:0}
 .story .split:not(.flip) .split-media .dm-wrap,.story .split:not(.flip) .split-media canvas.dotmodel{margin-left:auto}
 @media (max-width:860px){.about-head.split > *,.story .split > *{justify-self:stretch}.story .split-media canvas.dotmodel{margin:0 auto}}
+/* Stacked layout (phones/tablets): one shared left edge for everything */
+@media (max-width:860px){
+  .about-head .split-media{justify-content:flex-start;max-width:none}
+  .about-head .photo{width:100%;max-width:520px;height:auto}
+  .story .split-media{justify-self:start;max-width:340px}
+  .story .split-media canvas.dotmodel{margin:0}
+}
+@media (max-width:860px){.story .split .split-media .dm-wrap,.story .split .split-media canvas.dotmodel{margin:0!important}.story .split-media{justify-self:start!important}}
