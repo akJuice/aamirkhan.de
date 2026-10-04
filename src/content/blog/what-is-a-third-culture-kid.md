@@ -2,6 +2,7 @@
 title: "What Is a Third Culture Kid?"
 description: "Born in India, grew up in Turkey, living in Germany. What being a third culture kid means, where the term comes from, and why it matters to me."
 date: 2026-10-02
+updated: 2026-10-04
 category: personal
 ---
 

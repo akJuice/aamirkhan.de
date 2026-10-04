@@ -316,3 +316,6 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
 :root[data-theme="dark"] .name-blue{color:#7b9be0}
 /* FeatherFlow wordmark on the text baseline */
 .ff-chip{vertical-align:-0.1em!important}
+/* Byline: name and date on one line */
+.byline .who{flex-direction:row;align-items:baseline;gap:var(--s1);flex-wrap:wrap}
+.byline .who .muted::before{content:"·";margin-right:var(--s1)}
