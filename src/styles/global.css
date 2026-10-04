@@ -276,3 +276,6 @@ button.theme:hover,button.theme:focus-visible{background:none;color:var(--text)}
 .hero-globe canvas.dotmodel,.hero-globe .dm-wrap{max-width:none!important;width:100%!important}
 .hero-globe{opacity:.95}
 .ff-chip:hover,.ff-chip:focus-visible{background:none!important;box-shadow:none!important}
+/* FeatherFlow logo: sits like a word, no extra padding now that there's no hover background */
+.ff-chip{padding:0!important;margin:0!important}
+.ff-chip img,.hero .ff-chip img{height:.88em}
