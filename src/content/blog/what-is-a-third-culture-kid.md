@@ -13,7 +13,7 @@ The truth is, I'm a bit of all three, but not fully any of them. It took me a wh
 
 ## Where the term comes from
 
-In the 1950s, the American sociologist Ruth Hill Useem studied American families who were living in India for work. And yes, India of all places. She noticed that their children didn't fully belong to American culture or to Indian culture. They were creating something of their own.
+In the 1950s, Ruth Hill Useem and her husband studied American families who were living in India for work. And yes, India of all places. She noticed that their children didn't fully belong to American culture or to Indian culture. Later, she gave these kids a name: third culture kids.
 
 Many years later, David Pollock and Ruth Van Reken wrote about it, and that's how more and more people got to know the term. They defined a third culture kid as someone who spent a big part of their childhood outside their parents' culture.
 
