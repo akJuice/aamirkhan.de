@@ -350,3 +350,9 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
 }
 /* Name uses the same site accent blue as links and arrows (light + dark) */
 .name-blue,:root[data-theme="dark"] .name-blue{color:var(--accent)!important}
+/* Homepage photo: same width as the nav (Home to theme toggle), right-aligned with it */
+@media (min-width:861px){
+  .hero.split{grid-template-columns:1fr auto}
+  .hero .split-media{width:var(--nav-w,380px);max-width:none;justify-self:end}
+  .hero .photo{width:100%;height:auto;max-height:calc(100dvh - 260px);aspect-ratio:4/5;object-fit:cover}
+}

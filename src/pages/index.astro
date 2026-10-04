@@ -22,6 +22,15 @@ import DotArrow from '../components/DotArrow.astro';
 </Base>
 
 <script>
+  // Photo spans exactly from the 'Home' link to the theme toggle
+  const fitPhoto = () => {
+    const nav = document.querySelector('header.site nav');
+    if (!nav) return;
+    const r = nav.getBoundingClientRect();
+    document.documentElement.style.setProperty('--nav-w', Math.round(r.width) + 'px');
+  };
+  fitPhoto(); addEventListener('resize', fitPhoto); document.fonts?.ready.then(fitPhoto);
+
   const greetings: [string, string][] = [
     ["Hi, I'm Aamir.", 'Aamir'],
     ['Hallo, ich bin Aamir.', 'Aamir'],
