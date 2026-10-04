@@ -319,3 +319,6 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
 /* Byline: name and date on one line */
 .byline .who{flex-direction:row;align-items:baseline;gap:var(--s1);flex-wrap:wrap}
 .byline .who .muted::before{content:"·";margin-right:var(--s1)}
+.byline .who .muted::before{content:none}
+.byline .who{gap:var(--s2)}
+.byline .who .muted,.byline .who time{font-size:var(--fs-body)}
