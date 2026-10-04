@@ -322,3 +322,4 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
 .byline .who .muted::before{content:none}
 .byline .who{gap:var(--s2)}
 .byline .who .muted,.byline .who time{font-size:var(--fs-body)}
+.byline .who strong{font-weight:600}
