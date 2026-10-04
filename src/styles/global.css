@@ -323,3 +323,12 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
 .byline .who{gap:var(--s2)}
 .byline .who .muted,.byline .who time{font-size:var(--fs-body)}
 .byline .who strong{font-weight:600}
+/* About me: use the full page width, aligned to the left edge (logo) and right edge (theme toggle) */
+.about-head.split > .split-text,.story .split:not(.flip) > .split-text{justify-self:start}
+.about-head.split > .split-media,.story .split:not(.flip) > .split-media{justify-self:end}
+.story .split.flip > .split-media{justify-self:start}
+.story .split.flip > .split-text{justify-self:end}
+.about-head .split-media{display:flex;justify-content:flex-end}
+.story .split-media canvas.dotmodel{margin:0}
+.story .split:not(.flip) .split-media .dm-wrap,.story .split:not(.flip) .split-media canvas.dotmodel{margin-left:auto}
+@media (max-width:860px){.about-head.split > *,.story .split > *{justify-self:stretch}.story .split-media canvas.dotmodel{margin:0 auto}}
