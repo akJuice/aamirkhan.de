@@ -340,3 +340,11 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
   .story .split-media canvas.dotmodel{margin:0}
 }
 @media (max-width:860px){.story .split .split-media .dm-wrap,.story .split .split-media canvas.dotmodel{margin:0!important}.story .split-media{justify-self:start!important}}
+/* About me, wide screens: both columns are filled edge to edge, so the right column
+   (photo, text, objects) shares one left line (the centre line) and one right line (the toggle). */
+@media (min-width:861px){
+  .about-head.split,.story .split{grid-template-columns:1fr 1fr}
+  .about-head.split > *,.story .split > .split-text{justify-self:stretch;max-width:none;width:100%}
+  .about-head .split-media{display:block}
+  .about-head .photo{width:100%;height:auto;max-height:620px}
+}
