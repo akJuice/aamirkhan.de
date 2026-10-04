@@ -4,7 +4,6 @@ import { Image } from 'astro:assets';
 import photo from '../assets/aamir.jpg';
 import FeatherFlow from '../components/FeatherFlow.astro';
 import DotArrow from '../components/DotArrow.astro';
-import Globe from '../components/Globe.astro';
 ---
 <Base>
 <section class="hero split">
@@ -17,7 +16,6 @@ import Globe from '../components/Globe.astro';
 <p class="lead">Turning ideas into <span class="nowrap">products at <FeatherFlow /></span></p>
 </div>
 <div class="split-media hero-media">
-<div class="hero-globe" aria-hidden="true"><Globe /></div>
 <Image src={photo} alt="Portrait of Aamir Khan" widths={[400,800]} sizes="(max-width: 860px) 320px, 400px" class="photo" loading="eager" />
 </div>
 </section>
