@@ -10,7 +10,7 @@ import DotArrow from '../components/DotArrow.astro';
 <div class="split-text">
 <h1 class="greet">
 <span class="sr-only">Hi, I'm Aamir.</span>
-<span class="greet-text" id="greet" aria-hidden="true">Hi, I'm Aamir.</span>
+<span class="greet-text" id="greet" aria-hidden="true">Hi, I'm <span class="name-blue">Aamir</span>.</span>
 </h1>
 <p class="lead"><a class="arrow-link" href="/blog/what-is-a-third-culture-kid/">Third Culture Kid<DotArrow /></a></p>
 <p class="lead">Turning ideas into <span class="nowrap">products at <FeatherFlow /></span></p>
@@ -22,11 +22,11 @@ import DotArrow from '../components/DotArrow.astro';
 </Base>
 
 <script>
-  const greetings: [string, string?][] = [
-    ["Hi, I'm Aamir."],
-    ['Hallo, ich bin Aamir.'],
-    ['Merhaba, ben Aamir.'],
-    ['नमस्ते, मैं आमिर हूँ।'],
+  const greetings: [string, string][] = [
+    ["Hi, I'm Aamir.", 'Aamir'],
+    ['Hallo, ich bin Aamir.', 'Aamir'],
+    ['Merhaba, ben Aamir.', 'Aamir'],
+    ['नमस्ते, मैं आमिर हूँ।', 'आमिर'],
   ];
   const el = document.getElementById('greet')!;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,9 +36,12 @@ import DotArrow from '../components/DotArrow.astro';
       el.classList.add('out');
       setTimeout(() => {
         i = (i + 1) % greetings.length;
-        const [text, dir] = greetings[i];
-        el.textContent = text;
-        el.dir = dir ?? 'ltr';
+        const [text, name] = greetings[i];
+        el.textContent = '';
+        const [before, after] = text.split(name);
+        const span = document.createElement('span');
+        span.className = 'name-blue'; span.textContent = name;
+        el.append(before, span, after);
         el.classList.remove('out');
       }, 350);
     }, 2200);

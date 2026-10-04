@@ -310,3 +310,9 @@ body:has(.hero) footer{margin-top:0;padding:var(--s2) 0 var(--s3);flex-direction
   .hero .photo{height:100%;min-height:0;max-height:440px;width:auto}
 }
 @media (max-width:640px){body:has(.hero) footer{flex-wrap:nowrap}body:has(.hero) footer ul.social{gap:4px}}
+/* Name in the blue of the photo background */
+.name-blue{color:#365ca8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .name-blue{color:#7b9be0}}
+:root[data-theme="dark"] .name-blue{color:#7b9be0}
+/* FeatherFlow wordmark on the text baseline */
+.ff-chip{vertical-align:-0.1em!important}
