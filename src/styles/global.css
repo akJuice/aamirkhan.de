@@ -279,3 +279,4 @@ button.theme:hover,button.theme:focus-visible{background:none;color:var(--text)}
 /* FeatherFlow logo: sits like a word, no extra padding now that there's no hover background */
 .ff-chip{padding:0!important;margin:0!important}
 .ff-chip img,.hero .ff-chip img{height:.88em}
+.ff-chip{margin-left:.12em!important}
