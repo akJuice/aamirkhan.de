@@ -280,3 +280,6 @@ button.theme:hover,button.theme:focus-visible{background:none;color:var(--text)}
 .ff-chip{padding:0!important;margin:0!important}
 .ff-chip img,.hero .ff-chip img{height:.88em}
 .ff-chip{margin-left:.12em!important}
+/* FeatherFlow logo: comfortable spacing on both sides, wordmark on the text baseline */
+.ff-chip{margin:0 .12em 0 .28em!important;vertical-align:-0.2em}
+.ff-chip img,.hero .ff-chip img{height:1em}
