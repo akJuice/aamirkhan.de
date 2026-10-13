@@ -7,7 +7,7 @@ interface Props { title?: string; description?: string }
 const { title, description = 'Aamir Khan, a third culture kid helping companies and ambitious founders around the world turn AI ideas into real products.' } = Astro.props;
 const full = title ? `${title} · Aamir Khan` : 'Aamir Khan';
 const path = Astro.url.pathname;
-const links = [['/','Home'],['/about','About me'],['/blog','Blog'],['/contact','Get in touch']];
+const links = [['/','Home'],['/#about','About me'],['/blog','Blog'],['/contact','Get in touch']];
 ---
 <!doctype html>
 <html lang="en">
@@ -46,6 +46,14 @@ const links = [['/','Home'],['/about','About me'],['/blog','Blog'],['/contact','
 </footer>
 </div>
 <script is:inline>
+(()=>{const h=document.querySelector('header.site');const set=()=>document.documentElement.style.setProperty('--hdr',h.offsetHeight+'px');set();addEventListener('resize',set);document.fonts&&document.fonts.ready.then(set)})();
+// Fade sections in as they scroll into view; highlight Home / About me in the nav on the homepage
+(()=>{const els=document.querySelectorAll('.reveal');if(!('IntersectionObserver'in window)){els.forEach(e=>e.classList.add('in'));return}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px',threshold:.08});els.forEach(e=>io.observe(e));
+const about=document.getElementById('about');if(!about)return;const home=document.querySelector('header.site nav a[href="/"]'),ab=document.querySelector('header.site nav a[href="/#about"]');
+const spy=()=>{const on=about.getBoundingClientRect().top<innerHeight*.5;ab.toggleAttribute('aria-current',on);if(on)ab.setAttribute('aria-current','page');home.toggleAttribute('aria-current',!on);if(!on)home.setAttribute('aria-current','page')};
+addEventListener('scroll',spy,{passive:true});spy();
+home.addEventListener('click',e=>{e.preventDefault();scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'','/')});})();
 document.getElementById('theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('theme',r.dataset.theme)}catch(e){}};
 </script>
 </body>

@@ -40,5 +40,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'shor
     items.forEach(li => { const on = f === 'all' || li.dataset.cat === f; li.hidden = !on; if (on) shown++; });
     empty.hidden = shown > 0;
   }));
+  const c = new URLSearchParams(location.search).get('c');
+  tabs.find(t => t.dataset.filter === c)?.click();
 </script>
 </Base>
