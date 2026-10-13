@@ -369,3 +369,10 @@ header.site nav a[href="/#about"][aria-current]{color:var(--text)}
 }
 @media (min-width:861px){.story .split > .split-media{max-width:none;width:100%;display:flex;justify-content:center}.story .split-media .dm-wrap{max-width:520px}}
 .story .globe-wrap{width:100%;max-width:520px}
+/* Wider page: header and content use the whole screen width */
+:root{--page:1600px;--gutter:clamp(20px,4.5vw,80px)}
+/* About me: tighter spacing between paragraphs and sections */
+.story .split-text p{margin:0 0 12px}
+.story .split-text h2{margin-bottom:var(--s2)}
+.story > .split{min-height:68svh;padding:var(--s4) 0}
+#about.about-head{min-height:75svh}
