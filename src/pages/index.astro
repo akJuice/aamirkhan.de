@@ -21,7 +21,7 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'shor
 <span class="greet-text" id="greet" aria-hidden="true">Hi, I'm <span class="name-blue">Aamir</span>.</span>
 </h1>
 <p class="lead"><a class="arrow-link" href="/blog/what-is-a-third-culture-kid/">Third Culture Kid<DotArrow /></a></p>
-<p class="lead">Turning ideas into <span class="nowrap">products at <FeatherFlow /></span></p>
+<p class="lead"><strong>Turning ideas into products</strong> <span class="nowrap dim">at <FeatherFlow /></span></p>
 </div>
 <div class="split-media hero-media">
 <Image src={photo} alt="Portrait of Aamir Khan" widths={[400,800]} sizes="(max-width: 860px) 320px, 400px" class="photo" loading="eager" />
@@ -30,16 +30,17 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'shor
 </section>
 
 <section id="about" class="about-head split reveal">
-<div class="split-text"><h2 class="section-title">About me</h2></div>
+<div class="split-text"><p class="eyebrow">01 · About</p><h2 class="section-title">About me</h2></div>
 <div class="split-media"><Image src={aboutPhoto} alt="Aamir Khan sitting in a boat on a lake with mountains behind him" widths={[420,840]} sizes="(max-width: 860px) 320px, 50vw" class="photo" /></div>
 </section>
 
 <div class="story">
 <section class="split reveal flip">
 <div class="split-text">
+<p class="eyebrow">02 · Journey</p>
 <h2>My Journey</h2>
-<p>I was born in Bangalore, India, grew up in Turkey, and have been living in Germany since 2016.</p>
-<p>Moving between three countries made me a third culture kid. It shaped how I see the world, and along the way I picked up English, German, Turkish, Hindi and Urdu, plus a little Italian.</p>
+<p><strong>Born in Bangalore, raised in Turkey, at home in Germany.</strong> I have been living here since 2016.</p>
+<p><strong>Moving between three countries made me a third culture kid.</strong> It shaped how I see the world, and along the way I picked up English, German, Turkish, Hindi and Urdu, plus a little Italian.</p>
 <p><a class="arrow-link" href="/blog/what-is-a-third-culture-kid/">What it means to be a third culture kid<DotArrow /></a></p>
 </div>
 <div class="split-media"><Globe /></div>
@@ -47,16 +48,18 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'shor
 
 <section class="split reveal">
 <div class="split-text">
+<p class="eyebrow">03 · Education</p>
 <h2>Education</h2>
-<p>I started high school in Turkey and completed it in Cologne. After that, I completed my bachelor's degree in computer science at RWTH Aachen University.</p>
+<p><strong>Maths was always my thing.</strong> I started high school in Turkey and completed it in Cologne. After that, I completed my bachelor's degree in computer science at RWTH Aachen University.</p>
 </div>
 <div class="split-media"><DotModel model="cap" label="Rotating 3D graduation cap" /></div>
 </section>
 
 <section class="split reveal flip">
 <div class="split-text">
+<p class="eyebrow">04 · Work</p>
 <h2>Work</h2>
-<p>Today I am a Technical Project Manager <span class="nowrap">at <FeatherFlow />,</span> a product agency that helps companies and ambitious founders around the world turn AI ideas into real products. I work at the intersection of clients and engineering: scoping products, keeping delivery on track, and making sure what we build solves the actual problem.</p>
+<p><strong>Today I am a Technical Project Manager</strong> <span class="nowrap">at <FeatherFlow />,</span> a product agency that helps companies and ambitious founders around the world turn AI ideas into real products. I work at the intersection of clients and engineering: scoping products, keeping delivery on track, and making sure what we build solves the actual problem.</p>
 <p>I also spent a year at Bosch as an intern in Sales, Strategy and Business Excellence, and wrote my bachelor's thesis with Bosch.</p>
 <p><a class="arrow-link" href="/blog/?c=professional">Read what I write about AI and products<DotArrow /></a></p>
 </div>
@@ -65,15 +68,16 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB',{day:'numeric',month:'shor
 
 <section class="split reveal">
 <div class="split-text">
+<p class="eyebrow">05 · Life</p>
 <h2>Outside of work</h2>
-<p>You will usually find me on a basketball court or in the gym. I also love going to events about personal development. Meeting people who want to grow is one of the best ways I know to keep learning.</p>
+<p><strong>You will usually find me on a basketball court or in the gym.</strong> I also love going to events about personal development. Meeting people who want to grow is one of the best ways I know to keep learning.</p>
 </div>
 <div class="split-media"><DotModel model="sports" label="Rotating 3D basketball and dumbbell" /></div>
 </section>
 </div>
 
 <section class="latest reveal">
-<div class="latest-head"><h2 class="section-title">Latest writing</h2><a class="arrow-link quiet" href="/blog">All posts<DotArrow /></a></div>
+<div class="latest-head"><div><p class="eyebrow">06 · Writing</p><h2 class="section-title">Latest writing</h2></div><a class="arrow-link quiet" href="/blog">All posts<DotArrow /></a></div>
 <ul class="posts">
 {posts.map(p => (
   <li>

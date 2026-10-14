@@ -7,7 +7,7 @@ interface Props { title?: string; description?: string }
 const { title, description = 'Aamir Khan, a third culture kid helping companies and ambitious founders around the world turn AI ideas into real products.' } = Astro.props;
 const full = title ? `${title} · Aamir Khan` : 'Aamir Khan';
 const path = Astro.url.pathname;
-const links = [['/','Home'],['/#about','About me'],['/blog','Blog'],['/contact','Get in touch']];
+const links = [['/','Home'],['/#about','About me'],['/blog','Blog'],['#contact','Get in touch']];
 ---
 <!doctype html>
 <html lang="en">
@@ -39,12 +39,19 @@ const links = [['/','Home'],['/#about','About me'],['/blog','Blog'],['/contact',
 </nav>
 </header>
 <main><slot /></main>
+</div>
+<section class="cta" id="contact" aria-label="Get in touch">
+<div class="cta-in">
+<p class="eyebrow">Get in touch</p>
+<h2 class="cta-title">Let's talk.<br /><span class="dim">About AI, life between cultures, public speaking, or anything you read here.</span></h2>
+<p class="cta-mail"><a href="mailto:aamirkhan760109@gmail.com">aamirkhan760109@gmail.com</a></p>
+<div class="cta-row"><Social size={22} /><span class="dim">// Leonberg, Germany</span></div>
 <footer>
 <span>© {new Date().getFullYear()} Aamir Khan</span>
-<Social size={18} />
 <span><a href="/legal">Legal</a></span>
 </footer>
 </div>
+</section>
 <script is:inline>
 (()=>{const h=document.querySelector('header.site');const set=()=>document.documentElement.style.setProperty('--hdr',h.offsetHeight+'px');set();addEventListener('resize',set);document.fonts&&document.fonts.ready.then(set)})();
 // Fade sections in as they scroll into view; highlight Home / About me in the nav on the homepage

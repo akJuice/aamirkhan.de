@@ -376,3 +376,33 @@ header.site nav a[href="/#about"][aria-current]{color:var(--text)}
 .story .split-text h2{margin-bottom:var(--s2)}
 .story > .split{min-height:68svh;padding:var(--s4) 0}
 #about.about-head{min-height:75svh}
+/* ===== Inspo pass: one bold moment, fewer sizes, two-tone text, small labels, clear ending ===== */
+/* 1. Bold greeting */
+.hero h1.greet{font-size:clamp(2.8rem,6.4vw,7rem)!important;letter-spacing:-.035em;line-height:1}
+.hero .lead{font-size:clamp(1.15rem,1.5vw,1.45rem)}
+.hero .lead strong{font-weight:500;color:var(--text)}
+.dim{color:var(--muted)}
+/* 2. Three sizes: big titles, one reading size, small labels */
+.section-title,.story .split h2{font-size:clamp(2.4rem,4.2vw,3.8rem)!important;line-height:1.02;letter-spacing:-.03em;margin:0 0 var(--s3)}
+.story .split-text p{font-size:clamp(1.1rem,1.25vw,1.3rem)!important;line-height:1.5}
+/* 3. Two-tone paragraphs: key phrase dark, the rest grey */
+.story .split-text p{color:var(--muted)}
+.story .split-text p strong{color:var(--text);font-weight:500}
+/* 4. Small section labels */
+.eyebrow{font-family:var(--font-sans);font-size:var(--fs-small);letter-spacing:.02em;color:var(--muted);margin:0 0 var(--s2)}
+.latest-head{align-items:flex-end}
+/* 5. Clear ending: dark closing block on every page */
+.cta{background:#0f0e0d;color:#f5f5f4;border-radius:28px 28px 0 0;margin-top:var(--s7)}
+.cta-in{max-width:var(--page);margin:0 auto;padding:var(--s7) var(--gutter) 0}
+.cta .eyebrow,.cta .dim{color:#a8a29e}
+.cta-title{color:#f5f5f4;font-size:clamp(2.6rem,5vw,4.6rem);line-height:1.04;letter-spacing:-.03em;margin:0 0 var(--s5);max-width:20ch}
+.cta-title .dim{display:block;font-size:.5em;line-height:1.25;letter-spacing:-.01em;margin-top:var(--s2);max-width:34ch}
+.cta-mail a{color:#f5f5f4;font-size:clamp(1.2rem,2vw,1.6rem);text-decoration:none;border:0}
+.cta-mail a:hover{color:#60a5fa}
+.cta-row{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s4)}
+.cta .social a{color:#f5f5f4}
+.cta footer{margin-top:var(--s7);border:0;color:#a8a29e;padding:var(--s4) 0 var(--s4);display:flex;justify-content:space-between}
+.cta footer a{color:#a8a29e}.cta footer a:hover{color:#f5f5f4}
+:root[data-theme="dark"] .cta{background:#000}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cta{background:#000}}
+.wrap{min-height:0}
