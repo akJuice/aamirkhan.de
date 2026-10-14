@@ -406,3 +406,16 @@ header.site nav a[href="/#about"][aria-current]{color:var(--text)}
 :root[data-theme="dark"] .cta{background:#000}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cta{background:#000}}
 .wrap{min-height:0}
+/* Labels: one size everywhere */
+.eyebrow,.story .split-text p.eyebrow{font-size:var(--fs-small)!important;line-height:1.4!important;color:var(--muted)!important;margin:0 0 var(--s2)!important}
+/* Header: links spread across the full width */
+header.site{gap:var(--s5)}
+header.site nav{flex:1;display:flex;justify-content:space-between;align-items:center;margin-left:clamp(48px,12vw,260px)}
+@media (max-width:860px){header.site nav{margin-left:0;width:100%}}
+/* About me photo: calmer size */
+@media (min-width:861px){
+  #about.about-head{grid-template-columns:1fr auto;min-height:70svh}
+  #about.about-head > .split-media{width:clamp(300px,26vw,440px)}
+  #about.about-head .photo{max-height:60svh;object-fit:cover}
+}
+@media (min-width:861px){.hero .split-media{width:clamp(300px,26vw,440px)!important}}
