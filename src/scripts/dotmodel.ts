@@ -273,8 +273,9 @@ export function initDotModel(canvas: HTMLCanvasElement) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
     const theme = () => {
-      const dark = isDark();
-      scene.fog = built.noFog ? null : new THREE.Fog(new THREE.Color(getComputedStyle(document.body).backgroundColor), 5.0, 8.2);
+      const band = canvas.closest('.band-dark') as HTMLElement | null;
+      const dark = !!band || isDark();
+      scene.fog = built.noFog ? null : new THREE.Fog(new THREE.Color(getComputedStyle(band || document.body).backgroundColor), 5.0, 8.2);
       myMats.forEach(({ m, kind, color }) => {
         if (kind === 'body') { m.color = new THREE.Color(dark ? '#cfcfcf' : '#3a3a3a'); m.opacity = dark ? 0.85 : 0.75; }
         if (kind === 'faint') { m.color = new THREE.Color(dark ? '#cfcfcf' : '#3a3a3a'); m.opacity = dark ? 0.18 : 0.14; }
